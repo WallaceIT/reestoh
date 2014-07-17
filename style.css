@@ -1,0 +1,153 @@
+@charset "UTF-8";
+
+html{
+    height: 98%;
+}
+
+body{
+    height: 98%;
+    background-color: #7aadff;
+    font-size: 1em;
+    font-family: monospace;
+    overflow-y: scroll;
+}
+
+input{
+    text-align: center;
+}
+
+.hidden{
+    display: none;
+}
+
+/* index.php */
+div#event_name{
+    text-align: center;
+    font-family: fantasy;
+    font-size: 1.5em;
+    border-bottom: solid 1px #2e7fb1;
+    height: 5%;
+}
+div#toolbar{
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    text-align: right;
+}
+div#categories_container{
+    float:left;
+    width: 60%;
+    height:90%;
+    overflow-y: scroll;
+    padding: 1%;
+}
+div#controls_container{
+    float:left;
+    width: 35%;
+    height: 90%;
+    padding: 10px 1%;
+}
+div#order_container{
+    height: 60%;
+    overflow-y: scroll;
+    margin-bottom: 2%;
+    margin-top: 5px;
+    border: solid 1px #2e7fb1;
+}
+
+div.order_item{
+    width: 120%;
+    text-align: left;
+    padding-left: 4px;
+}
+
+div#total_container{
+    height: 20%;
+    text-align: right;
+    vertical-align: middle;
+    overflow-y: auto;
+}
+
+div#confirm_container{
+    text-align: right;
+    height: 20%;
+}
+    
+div.category{
+    padding-top: 20px;
+    clear: both;
+}
+
+div.item{
+    float: left;
+    width: 90%;
+    margin-right: -2px;
+}
+
+input.qty_item{
+    margin-top: -4px;
+}
+
+div.minus_item{
+    float: left;
+    width: 7%;
+}
+
+.button_plus_item,.button_minus_item{
+    font-size: 0.6em !important;
+    margin-top: -2px;
+}
+
+/* manage.php */
+input#mng_save{
+    float: right;
+    margin: 10px 0;
+}
+
+button#mng_newevent{
+    position:absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 0.8em;
+}
+
+input#mng_event_name{
+    font-size: 0.8em;
+    font-family: fantasy;
+}
+
+button.mng_add_item{
+    margin-top:10px;
+}
+
+/* order_list.php */
+div#olist_orders_container{
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* report.php */
+div.report_catname{
+    font-weight: bold;
+    font-size: 1.2em;
+    width: 80%;
+    margin: 20px auto 5px auto;
+    text-align: center;
+}
+table.report_cat_table{
+    width: 80%;
+    margin: 0 auto;
+}
+table.report_cat_table,td,th{
+    border: solid 1px black;
+    border-collapse:collapse;
+    padding: 10px;
+}
+div#report_total{
+    width: 70%;
+    margin: 20px auto;
+    font-weight: bold;
+    font-size: 1.3em;
+    text-align: right;
+    
+}
