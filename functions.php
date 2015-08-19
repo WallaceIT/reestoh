@@ -7,6 +7,7 @@ function processOrder($db, $post){
     $sql = "INSERT INTO orders_$post[eventID] (`ID`,`customer`, `order_content`, `total`, `staff`) VALUES (NULL, '$post[customer]', '$post[order]', '$post[total]', $post[staff])";
 
     $db -> query($sql);
+    $lastId = $db->lastInsertId();
 
     $items = preg_split("/;/", $post['order'], -1, PREG_SPLIT_NO_EMPTY);
 
@@ -23,6 +24,8 @@ function processOrder($db, $post){
             
         $db -> query($sql);
     }
+    
+    echo $lastId;
 };
 
 function getOrderDetails($db, $post){

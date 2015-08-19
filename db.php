@@ -1,8 +1,8 @@
 <?php
 $dbname = 'reestoh';
 $dsn = 'mysql:host=localhost;dbname='.$dbname;
-$username = 'reestoh';
-$password = 'password';
+$username = 'root';
+$password = '';
 $options = array(
     PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
 ); 

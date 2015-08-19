@@ -25,14 +25,17 @@
 
             while ($row_items = $items -> fetch(PDO::FETCH_ASSOC)) {
                 $itemID = $row_items['ID'];
-                $CATEGORIES_HTML .="<div id='item_$itemID' item='$itemID'
-                                    class='item ui-accordion-header ui-state-default ui-corner-left' price='$row_items[price]'>
+                $CATEGORIES_HTML .="<div id='sold_item_$itemID' item='$itemID' class='sold_item ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only'><span class='ui-button-text'>$row_items[sold]</span></div>
+                                    <div id='item_$itemID' item='$itemID' class='item ui-accordion-header ui-state-default' price='$row_items[price]'>
                                         $row_items[name] ($row_items[price]&euro;)
-                                        <input type='text' size='3' style='float:right' readonly value='0' id='qty_item_$itemID' item='$itemID' class='qty_item'>
+                                        <input type='text' size='3' style='float:right' readonly value='0' id='qty_item_$itemID' item='$itemID' cat='$row_items[category]' class='qty_item'>
                                     </div>
-                                    <div id='minus_item_$itemID' item='$itemID' class='minus_item'>-</div>".PHP_EOL;
+                                    <div id='minus_item_$itemID' item='$itemID' class='minus_item ui-corner-right'>-</div>".PHP_EOL;
+               
                 $ORDER_HTML .= "<div id='order_item_$itemID' class='order_item hidden ui-state-default'>
-								<button item='$itemID' class='minus_item button_minus_item'>-</button><input type='text' size='2' class='order_item_qty' value='0' readonly><button item='$itemID' class='item button_plus_item' price='$row_items[price]'>+</button>
+								<button item='$itemID' class='minus_item button_minus_item'>-</button>
+                                <input type='text' size='2' class='order_item_qty' value='0' readonly>
+                                <button item='$itemID' class='item button_plus_item' price='$row_items[price]'>+</button>
                                     $row_items[name]
                                 </div>".PHP_EOL;
             }
@@ -131,7 +134,7 @@
         
         $(".qty_item").each(function(){
             if (parseInt($(this).val()) != 0) {
-                order += $(this).attr("item")+":"+$(this).val()+";";
+                order += $(this).attr("item")+":"+$(this).val()+":"+$(this).attr("cat")+";";
             }
         });
         
@@ -153,6 +156,7 @@
 		      dataType: "text",
 		      success: function(response){
                   //alert(response);
+                  //myWindow = window.open('print.php?ID='+response);
 				  location.reload();
 		      }
         });

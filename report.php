@@ -36,6 +36,7 @@
     <div id="event_name">
         <?php echo $event; ?> - Report
     </div>
+    <div id="report_container">
     <?php
         $total = 0;
         while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
@@ -80,6 +81,7 @@
 
         echo "<div id='report_total'>Totale: $total&euro;</div>";
     ?>
+    </div>
 
 <script type="text/javascript">
     

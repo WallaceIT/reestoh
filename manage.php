@@ -47,42 +47,15 @@
         <input type="text" id="mng_event_name" value="<?php echo $event; ?>">
     </div>
     
-    <div id="mng_cat_container">
-        <div class="group">
-            <!-- SPECIAL ITEMS -->
-            <h3 id="cat_0" cat="0" name="Speciale">Speciale</h3>
-            <div id="cat_0_items">
-                <div class="mng_item ui-accordion-header ui-state-default ui-accordion-icons" cat="0" id="mng_item_1" item="1">
-                    <input size="30" type="text" id="mng_item_name_1" value="Coperto" readonly>
-                    &euro; <input type="number" id="mng_item_price_1" min="0" step="0.5" value="1.50" required>
-                </div>
-                <div class="mng_item ui-accordion-header ui-state-default ui-accordion-icons" cat="0" id="mng_item_2" item="2">
-                    <input size="30" type="text" id="mng_item_name_2" value="Asporto" readonly>
-                    &euro; <input type="number" id="mng_item_price_2" min="0" step="0.5" value="0.50" required>
-                </div>
-                <?php
-                    $items = $db -> query("SELECT * FROM items_$eventID WHERE category = 0 AND id > 2");
-						$item_ID = 2;
-                        while ($row_items = $items -> fetch(PDO::FETCH_ASSOC)) {
-                        $item_ID = $row_items['ID'];?>
-                            <div class="mng_item ui-accordion-header ui-state-default ui-accordion-icons" cat="0" id="mng_item_<?php echo $item_ID;?>" item="<?php echo $item_ID;?>">
-                                <input size="30" type="text" id="mng_item_name_<?php echo $row_items['ID'];?>" value="<?php echo $row_items['name']; ?>" required>
-                                &euro; <input type="number" id="mng_item_price_<?php echo $item_ID;?>" min="0" step="0.5" value="<?php echo $row_items['price'];?>" required>
-                                <span style="float:right"><a class="ui-icon ui-icon-closethick remove_item" href="" item="<?php echo $item_ID;?>">X</a></span>
-                            </div>
-                        <?php ;} ?>
-                <button class="mng_add_item" cat="<?php echo $ID;?>">+</button>
-                </div>
-        </div>
-        
+    <div id="mng_cat_container">        
         <?php
-            $cats = $db -> query("SELECT * FROM categories_$eventID WHERE id > 0");
+            $cats = $db -> query("SELECT * FROM categories_$eventID ORDER BY ID asc");
             while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
                 $ID = $row_cats['ID']; ?>
                 <div class="group">
                     <h3 id="cat_<?php echo $ID;?>" cat="<?php echo $ID;?>" name="<?php echo $row_cats['name'];?>">
                         <?php echo $row_cats['name'];?>
-                        <button style="float:right" class="remove_cat" cat="<?php echo $ID;?>"></button>
+                        <?php if($ID>1) {?><button style="float:right" class="remove_cat" cat="<?php echo $ID;?>"></button><?php ;} ?>
                     </h3>
                     <div id="cat_<?php echo $ID;?>_items">
                         <?php
