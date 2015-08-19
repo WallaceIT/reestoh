@@ -156,7 +156,7 @@
 		      dataType: "text",
 		      success: function(response){
                   //alert(response);
-                  //myWindow = window.open('print.php?ID='+response);
+                  myWindow = window.open('print.php?ID='+response);
 				  location.reload();
 		      }
         });
