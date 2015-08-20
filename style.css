@@ -26,14 +26,16 @@ input{
     display: none;
 }
 
-/* index.php */
 div#event_name{
     text-align: center;
     font-family: fantasy;
     font-size: 1.5em;
     border-bottom: solid 1px #2e7fb1;
     height: 5%;
+    width: inherit;
 }
+
+/* index.php */
 div#toolbar{
     position: absolute;
     top: 5px;
@@ -46,12 +48,14 @@ div#categories_container{
     height: inherit;
     overflow-y: scroll;
     padding: 0 1%;
+    font-size: 1.2em;
 }
 div#controls_container{
     float:left;
     width: 30%;
     height: 100%;
     padding: 1%;
+    font-size: 1.5em;
 }
 div#order_container{
     height: 60%;
@@ -69,34 +73,41 @@ div.order_item{
 }
 
 div#total_container{
-    height: 20%;
     text-align: right;
     vertical-align: middle;
-    overflow-y: auto;
+    overflow-y: hidden;
+    height: 10%;
+}
+
+div#total_container input{
+    font-size: 1.6em;
 }
 
 div#confirm_container{
     text-align: right;
     height: 20%;
 }
-
-table#categories_table{
-    padding: 0;
+ 
+div#event_name_category{
     text-align: center;
-    vertical-align: top;
-    border: 0;
+    font-family: fantasy;
+    font-size: 2em;
+    padding: 10px 0;
+    width: inherit;
 }
 
-table#categories_table td, tr{
-    padding: 0;
-    border: 0;
-}
-  
-    
 div.category{
-    clear: both;
+    float: left;
+    min-width: 400px;
+    max-width: 600px;
+    padding-top: 10px;
+    margin: 0 auto;
     text-align: center;
     font-weight: bold;
+}
+div.category_name{
+    font-weight: bold;
+    font-size: 1.2em;
 }
 
 div.sold_item{

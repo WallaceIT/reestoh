@@ -12,10 +12,10 @@
         header("Location: manage.php");
     }
 
-    $CATEGORIES_HTML = "<table id='categories_table'>";
+    $CATEGORIES_HTML = "<div class=\"category\" id=\"event_name_category\">$event</div>";
     $ORDER_HTML = "";
 
-    $tabler_counter = -1;
+    $tabler_counter = 0;
 
     $cats = $db -> query("SELECT * FROM categories_$eventID");
     while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
@@ -25,9 +25,10 @@
         if($count){
             
             $tabler_counter++;
-            $CATEGORIES_HTML .= "<td width='50%'>";
+            if($tabler_counter%2 == 0)
+                $CATEGORIES_HTML .= "<div style='heigth:0;clear:both'></div>";    
             
-            $CATEGORIES_HTML .="<div class='category'>$row_cats[name]<br />";
+            $CATEGORIES_HTML .="<div class='category'><div class='category_name'>$row_cats[name]</div>";
 
             while ($row_items = $items -> fetch(PDO::FETCH_ASSOC)) {
                 $itemID = $row_items['ID'];
@@ -46,17 +47,8 @@
                                 </div>".PHP_EOL;
             }
             $CATEGORIES_HTML .="</div>";
-            $CATEGORIES_HTML .= "</td>";
-            
-            if($ID == 1)
-                $CATEGORIES_HTML .= "<td><div id=\"event_name\">$event</div></td>";
-            
-            if($tabler_counter%2 == 0)
-                $CATEGORIES_HTML .= "</tr><tr>";
         }
     };
-
-    $CATEGORIES_HTML .= "</table>";
 
 ?>
 <!DOCTYPE html>
@@ -82,6 +74,7 @@
         <?php echo $CATEGORIES_HTML;?>
     </div>
     <div id="controls_container">
+        <br />
         Riepilogo
         <div id="order_container">
              <!-- ORD -->
@@ -93,8 +86,10 @@
         <div id="confirm_container">
             <form id="confirm_form">
                 Servizio <input type="checkbox" id="staff" value="1">
-                <br><br>
-                Nome Cliente <input type="text" id="customer" required> <input type="submit" id="order_confirm" value="Conferma">
+                <br /><br />
+                Nome Cliente <input type="text" id="customer" required>
+                <br /><br />
+                <input type="submit" id="order_confirm" value="Conferma">
             </form>
         </div>
     </div>
