@@ -42,6 +42,7 @@
                 if ($row_orders['staff']) echo " ***SERVIZIO***";
             ?>
             <span style="float:right"><button class="delete_order" order="<?php echo $orderID;?>"></button></span>
+            <span style="float:right"><button class="print_order"  order="<?php echo $orderID;?>"></button></span>
         </h3>
         <div id="details_order_<?php echo $orderID;?>"></div>
         <?php ;} ?>
@@ -55,6 +56,7 @@
     $('#order_list').button({icons: {primary: 'ui-icon-note'}});
     $('#manage').button({icons: {primary: 'ui-icon-key'}});
     $('.delete_order').button({icons: {primary: 'ui-icon-closethick'}});
+    $('.print_order').button({icons: {primary: 'ui-icon-print'}});
     
     $("#olist_orders_container").accordion({
         collapsible: true,
@@ -102,6 +104,11 @@
                 }
             });
         }
+    });
+    
+    $(".print_order").click(function(){
+        var orderID = $(this).attr("order");
+        window.open('print.php?ID='+orderID);
     });
     
 </script>

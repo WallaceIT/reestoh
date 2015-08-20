@@ -1,13 +1,13 @@
 @charset "UTF-8";
 
-html{
+html, body{
     height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body{
-    height: 100%;
     background-color: #7aadff;
-    font-size: 1.2em;
     font-family: monospace;
     overflow-y:hidden;
     -webkit-touch-callout: none;
@@ -42,27 +42,28 @@ div#toolbar{
 }
 div#categories_container{
     float:left;
-    width: 60%;
-    height:90%;
+    width: 65%;
+    height: inherit;
     overflow-y: scroll;
-    padding: 1%;
+    padding: 0 1%;
 }
 div#controls_container{
     float:left;
-    width: 35%;
-    height: 90%;
-    padding: 10px 1%;
+    width: 30%;
+    height: 100%;
+    padding: 1%;
 }
 div#order_container{
     height: 60%;
     overflow-y: scroll;
+    overflow-x: hidden;
     margin-bottom: 2%;
     margin-top: 5px;
     border: solid 1px #2e7fb1;
 }
 
 div.order_item{
-    width: 120%;
+    width: 100%;
     text-align: left;
     padding-left: 4px;
 }
@@ -78,25 +79,39 @@ div#confirm_container{
     text-align: right;
     height: 20%;
 }
+
+table#categories_table{
+    padding: 0;
+    text-align: center;
+    vertical-align: top;
+    border: 0;
+}
+
+table#categories_table td, tr{
+    padding: 0;
+    border: 0;
+}
+  
     
 div.category{
-    padding-top: 20px;
     clear: both;
     text-align: center;
+    font-weight: bold;
 }
 
 div.sold_item{
     float: left;
-    width: 7%;
+    width: 10%;
     text-align: center;
-    margin: auto;
+    margin: 0;
     cursor: default;
 }
 
 div.item{
     float: left;
-    width: 80%;
-    margin-right: -2px;
+    width: 78%;
+    height: auto;
+    margin: 0;
 }
 
 input.qty_item{
@@ -105,7 +120,8 @@ input.qty_item{
 
 div.minus_item{
     float: left;
-    width: 7%;
+    width: 10%;
+    margin: 0;
 }
 
 .button_plus_item,.button_minus_item{

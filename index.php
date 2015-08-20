@@ -12,21 +12,27 @@
         header("Location: manage.php");
     }
 
-    $CATEGORIES_HTML = "";
+    $CATEGORIES_HTML = "<table id='categories_table'>";
     $ORDER_HTML = "";
+
+    $tabler_counter = -1;
 
     $cats = $db -> query("SELECT * FROM categories_$eventID");
     while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
         $ID = $row_cats['ID'];
-        $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID");
+        $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID ORDER BY name ASC");
         $count = $items -> rowCount();
-        if($count){ 
-            $CATEGORIES_HTML .="<div class='category'>$row_cats[name]<br>";
+        if($count){
+            
+            $tabler_counter++;
+            $CATEGORIES_HTML .= "<td width='50%'>";
+            
+            $CATEGORIES_HTML .="<div class='category'>$row_cats[name]<br />";
 
             while ($row_items = $items -> fetch(PDO::FETCH_ASSOC)) {
                 $itemID = $row_items['ID'];
                 $CATEGORIES_HTML .="<div id='sold_item_$itemID' item='$itemID' class='sold_item ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only'><span class='ui-button-text'>$row_items[sold]</span></div>
-                                    <div id='item_$itemID' item='$itemID' class='item ui-accordion-header ui-state-default' price='$row_items[price]'>
+                                    <div id='item_$itemID' item='$itemID' class='item ui-button ui-widget ui-state-default ui-button-text-only' price='$row_items[price]'>
                                         $row_items[name] ($row_items[price]&euro;)
                                         <input type='text' size='3' style='float:right' readonly value='0' id='qty_item_$itemID' item='$itemID' cat='$row_items[category]' class='qty_item'>
                                     </div>
@@ -40,8 +46,18 @@
                                 </div>".PHP_EOL;
             }
             $CATEGORIES_HTML .="</div>";
+            $CATEGORIES_HTML .= "</td>";
+            
+            if($ID == 1)
+                $CATEGORIES_HTML .= "<td><div id=\"event_name\">$event</div></td>";
+            
+            if($tabler_counter%2 == 0)
+                $CATEGORIES_HTML .= "</tr><tr>";
         }
     };
+
+    $CATEGORIES_HTML .= "</table>";
+
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -60,9 +76,6 @@
         <a href="report.php" id="report" title="Statistiche"></a>
         <a href="order_list.php" id="order_list" title="Lista Ordini"></a>
         <a href="manage.php" id="manage" title="Modifica Menù"></a>
-    </div>
-    <div id="event_name">
-        <?php echo $event; ?>
     </div>
     <div id="categories_container">
         <!-- CAT -->

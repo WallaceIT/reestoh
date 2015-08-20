@@ -52,9 +52,13 @@ $cur_pointer = -1;
 
 $has_special = 0;
 
+$receipt = "";
+$receipt_total = 0;
+
 foreach($items as $item){
 
     $idx = preg_split("/:/", $item, -1, PREG_SPLIT_NO_EMPTY);
+
     $id  = $idx[0];
     $qty = $idx[1];
     $cat = $idx[2];
@@ -63,8 +67,14 @@ foreach($items as $item){
     $item_detail = $db -> query($sql);
     $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
     
+    // Receipt
+    $receipt .= "<tr><td width=\"15%\">$qty</td><td width=\"70%\">$item_detail[name]</td><td width=\"15%\">".$qty*$item_detail['price']."&euro;</td></tr>";
+    $receipt_total += $qty*$item_detail['price'];
+    
     // New category
     if($cat > $cur_cat){
+        
+        $cur_pointer++;
         
         if($cat == 1)
             $has_special = 1;
@@ -72,22 +82,26 @@ foreach($items as $item){
         $cat_name = $db -> query("SELECT name FROM categories_$eventID WHERE ID = $cat");
         $cat_name = $cat_name -> fetch(PDO::FETCH_ASSOC);
         $CAT_HTML[][0] = $cat_name['name'];
-        $cur_pointer++;
-        $CAT_HTML[$cur_pointer][1] = "<tr><td width=\"20%\">$qty</td><td width=\"80%\">$item_detail[name]</td></tr>";
+        $CAT_HTML[$cur_pointer][1] = "<tr><td width=\"15%\" style=\"text-align:right\">$qty</td><td width=\"85%\">$item_detail[name]</td></tr>";
         $cur_cat = $cat;
     }
-    else $CAT_HTML[$cur_pointer][1] .= "<tr><td>$qty</td><td>$item_detail[name]</td></tr>";
+    else $CAT_HTML[$cur_pointer][1] .= "<tr><td style=\"text-align:right\">$qty</td><td>$item_detail[name]</td></tr>";
 }
 
 // Normal categories (starts from $has_special, equal to 1 only if special elements are present)
 for($i=$has_special; $i<=$cur_pointer;$i++){  
-    $CAT_HTML[$i][1] = '<br><div style="text-align:center">'.$CAT_HTML[$i][0].'</div><br><table border="1" cellpadding="1mm">'.$CAT_HTML[$i][1].($has_special?$CAT_HTML[0][1]:'').'</table>';
+    $CAT_HTML[$i][1] = "<br><div><b>TAVOLO:</b> _____ <b> CLIENTE:</b> $order[customer]</div><div style=\"text-align:center\">".$CAT_HTML[$i][0]."</div><br><table border=\"1\" cellpadding=\"1mm\">".$CAT_HTML[$i][1].($has_special?$CAT_HTML[0][1]:'')."</table>";
 }
 
-$CAT_HEADER_HTML = '<div style="text-align:center">'.$event."</div><hr>";
-$CAT_FOOTER_HTML = "<hr><div style=\"text-align:center\">#$order[ID] - $order[customer] - $order[timestamp]</div>";
+// Receipt
+$receipt .= "<tr><td width=\"15%\"></td><td width=\"70%\" style=\"text-align:right\">TOTALE:</td><td width=\"15%\">$receipt_total&euro;</td></tr>";
+$cur_pointer++;
+$CAT_HTML[][0] = "*COPIA PER IL CLIENTE*";
+$CAT_HTML[$cur_pointer][1] = "<br><div style=\"text-align:center\">*COPIA PER IL CLIENTE*</div><br><table border=\"1\" cellpadding=\"1mm\">$receipt</table>";
 
-
+// Headee and footer
+$CAT_HEADER_HTML = "<div style=\"text-align:center\"><b>$event</b></div><hr>";
+$CAT_FOOTER_HTML = "<hr><div style=\"text-align:center\">#$order[ID] - $order[timestamp]</div>";
 
 // PDF creation
 
@@ -124,8 +138,8 @@ if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
 // ---------------------------------------------------------
 
 
-$pagecount = $cur_pointer/4;
-$cellcount = $cur_pointer;
+$pagecount = ($cur_pointer+1-$has_special)/4;
+$cellcount = ($cur_pointer+1-$has_special);
 
 
 for($ix=0; $ix<$pagecount;$ix++){
@@ -147,23 +161,23 @@ for($ix=0; $ix<$pagecount;$ix++){
         </tr>
         <tr>
             <td height="7.5mm"></td>
-            <td>'.($cellcount>($ix+0)?$CAT_HEADER_HTML:"").'</td>
+            <td>'.($cellcount>(4*$ix+0)?$CAT_HEADER_HTML:"").'</td>
             <td></td>
-            <td>'.($cellcount>($ix+1)?$CAT_HEADER_HTML:"").'</td>
+            <td>'.($cellcount>(4*$ix+1)?$CAT_HEADER_HTML:"").'</td>
             <td></td>
         </tr>
         <tr>
             <td height="122.5mm"></td>
-            <td>'.($cellcount>($ix+0)?$CAT_HTML[($ix+1)][1]:"").'</td>
+            <td>'.($cellcount>(4*$ix+0)?$CAT_HTML[(4*$ix+0+$has_special)][1]:"").'</td>
             <td></td>
-            <td>'.($cellcount>($ix+1)?$CAT_HTML[($ix+2)][1]:"").'</td>
+            <td>'.($cellcount>(4*$ix+1)?$CAT_HTML[(4*$ix+1+$has_special)][1]:"").'</td>
             <td></td>
         </tr>
         <tr>
             <td height="7.5mm"></td>
-            <td>'.($cellcount>($ix+0)?$CAT_FOOTER_HTML:"").'</td>
+            <td>'.($cellcount>(4*$ix+0)?$CAT_FOOTER_HTML:"").'</td>
             <td></td>
-            <td>'.($cellcount>($ix+1)?$CAT_FOOTER_HTML:"").'</td>
+            <td>'.($cellcount>(4*$ix+1)?$CAT_FOOTER_HTML:"").'</td>
             <td></td>
         </tr>
         <tr>
@@ -182,23 +196,23 @@ for($ix=0; $ix<$pagecount;$ix++){
         </tr>
         <tr>
             <td height="7.5mm"></td>
-            <td>'.($cellcount>($ix+2)?$CAT_HEADER_HTML:"").'</td>
+            <td>'.($cellcount>(4*$ix+2)?$CAT_HEADER_HTML:"").'</td>
             <td></td>
-            <td>'.($cellcount>($ix+3)?$CAT_HEADER_HTML:"").'</td>
+            <td>'.($cellcount>(4*$ix+3)?$CAT_HEADER_HTML:"").'</td>
             <td></td>
         </tr>
         <tr>
             <td height="122.5mm"></td>
-            <td>'.($cellcount>($ix+2)?$CAT_HTML[($ix+3)][1]:"").'</td>
+            <td>'.($cellcount>(4*$ix+2)?$CAT_HTML[(4*$ix+2+$has_special)][1]:"").'</td>
             <td></td>
-            <td>'.($cellcount>($ix+3)?$CAT_HTML[($ix+4)][1]:"").'</td>
+            <td>'.($cellcount>(4*$ix+3)?$CAT_HTML[(4*$ix+3+$has_special)][1]:"").'</td>
             <td></td>
         </tr>
         <tr>
             <td height="7.5mm"></td>
-            <td>'.($cellcount>($ix+2)?$CAT_FOOTER_HTML:"").'</td>
+            <td>'.($cellcount>(4*$ix+2)?$CAT_FOOTER_HTML:"").'</td>
             <td></td>
-            <td>'.($cellcount>($ix+3)?$CAT_FOOTER_HTML:"").'</td>
+            <td>'.($cellcount>(4*$ix+3)?$CAT_FOOTER_HTML:"").'</td>
             <td></td>
         </tr>
         <tr>

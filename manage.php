@@ -76,7 +76,7 @@
     <br>
     
     <button id="mng_add_cat">Aggiungi Categoria</button>
-    <div id="mng_modal_add_cat" title="Add category" class="hidden">
+    <div id="mng_modal_add_cat" title="Aggiungi categoria:" class="hidden">
         <br>
         <input type="text" id="modal_add_cat_name" required>
         <br><br>
