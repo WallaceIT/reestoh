@@ -26,6 +26,8 @@ input{
     display: none;
 }
 
+.no-close .ui-dialog-titlebar-close {display: none }
+
 div#event_name{
     text-align: center;
     font-family: fantasy;
@@ -92,14 +94,14 @@ div#event_name_category{
     text-align: center;
     font-family: fantasy;
     font-size: 2em;
-    padding: 10px 0;
-    width: inherit;
+    padding: 10px 0 0 0;
+    width: 100%;
 }
 
 div.category{
     float: left;
-    min-width: 400px;
-    max-width: 600px;
+    min-width: 380px;
+    max-width: 39em;
     padding-top: 10px;
     margin: 0 auto;
     text-align: center;
@@ -198,4 +200,18 @@ div#report_total{
     font-size: 1.3em;
     text-align: right;
     
+}
+/* admin.php */
+
+div.admin_opt_block{
+    width: 90%;
+    margin: 10px auto;
+    padding: 10px;
+    background-color: #9ccfff;
+    font-size: 1.2em;
+}
+div#admin_messagebox{
+    text-align: center;
+     font-size: 1.5em;
+    color: red;
 }

@@ -71,19 +71,33 @@ function deleteOrder($db, $post){
     $db -> query("DELETE FROM orders_$post[eventID] WHERE ID = $post[orderID]");
 };
 
+function activateEvent($db, $post){
+    $db -> query("UPDATE events SET `active` = FALSE");
+    $db -> query("UPDATE events SET `active` = TRUE WHERE `id` = '$post[eventID]'");
+ };
+
 function newEvent($db, $post){
-    $db -> query("INSERT INTO events (`ID`, `name`) VALUES (NULL, 'Nuovo Evento')");
+    $db -> query("UPDATE events SET `active` = FALSE");
+    $db -> query("INSERT INTO events (`ID`, `name`, `active`) VALUES (NULL, '$post[name]', TRUE)");
     $lastID = $db -> lastInsertId();
-    $db -> query("CREATE TABLE categories_".$lastID." LIKE categories_0");
-    $db -> query("INSERT categories_".$lastID." SELECT * FROM categories_0;");
-    $db -> query("CREATE TABLE items_".$lastID." LIKE items_0");
-    $db -> query("INSERT items_".$lastID." SELECT * FROM items_0;");
-    $db -> query("CREATE TABLE orders_".$lastID." LIKE orders_0");
- };   
+    $db -> query("CREATE TABLE categories_$lastID LIKE categories_$post[copyID]");
+    $db -> query("INSERT categories_$lastID SELECT * FROM categories_$post[copyID];");
+    $db -> query("CREATE TABLE items_$lastID LIKE items_$post[copyID]");
+    $db -> query("INSERT items_$lastID SELECT * FROM items_$post[copyID];");
+    $db -> query("CREATE TABLE orders_$lastID LIKE orders_$post[copyID]");
+ };
+
+function deleteEvent($db, $post){
+    $db -> query("DELETE FROM events WHERE ID = $post[eventID]");
+    $db -> query("DROP TABLE categories_$post[eventID]");
+    $db -> query("DROP TABLE items_$post[eventID]");
+    $db -> query("DROP TABLE orders_$post[eventID]");
+ };
     
 function editMenu($db, $post){
     $queries = preg_split('/§/', $post['sql'], -1, PREG_SPLIT_NO_EMPTY);
     foreach ($queries as $query)
         $events = $db -> query($query);
+    echo 'OK';
 };
 ?>

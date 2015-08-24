@@ -1,7 +1,7 @@
 <?php
     require('db.php');
     
-    $events = $db -> query('SELECT * FROM events ORDER BY ID DESC LIMIT 0,1');
+    $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
     $count = $events->rowCount();
     if($count){
         $row_events = $events -> fetch(PDO::FETCH_ASSOC);
@@ -9,10 +9,10 @@
         $eventID = $row_events['ID'];
     }
     else{
-        header("Location: manage.php");
+        header("Location: admin.php?noactive");
     }
 
-    $CATEGORIES_HTML = "<div class=\"category\" id=\"event_name_category\">$event</div>";
+    $CATEGORIES_HTML = "<div id=\"event_name_category\">$event</div>";
     $ORDER_HTML = "";
 
     $tabler_counter = 0;
@@ -55,7 +55,7 @@
 <html lang="it">
 <head>
     <meta charset="utf-8">
-    <title><?php echo $event; ?> - Reestoh 2014</title>
+    <title><?php echo $event; ?></title>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="js/jquery-ui.css"/>
     <script src="js/jquery.min.js" type="text/javascript"></script>
@@ -93,6 +93,7 @@
             </form>
         </div>
     </div>
+    <div id="printing_dialog" class="hidden">Ordine in stampa, attendere...</div>
 
 <!------------ JQUERY -------------->
 <script type="text/javascript">
@@ -111,7 +112,7 @@
     
     $(".item").button().click( function() {
         
-			$("#total").val(parseFloat($("#total").val()) + parseFloat($(this).attr("price")));
+			$("#total").val((parseFloat($("#total").val()) + parseFloat($(this).attr("price"))).toFixed(2));
 			qty = "#qty_item_"+$(this).attr("item");
 			$(qty).val(parseInt($(qty).val()) + 1);
 			$(qty).css("color","red");
@@ -150,6 +151,13 @@
         if($("#staff").is(":checked"))
             staff = 1;
         
+        $("#printing_dialog").dialog({
+            modal: true,
+            dialogClass: 'no-close',
+            closeOnEscape: false,
+            draggable: false,
+        });
+        
         $.ajax({
 		      type: "POST",
 		      url: "functions.php",
@@ -163,9 +171,15 @@
               },
 		      dataType: "text",
 		      success: function(response){
-                  //alert(response);
-                  myWindow = window.open('print.php?ID='+response);
-				  location.reload();
+                  $.ajax({
+                      type: "POST",
+		              url: "print.php?ID="+response,
+                      success: function(response){
+                          if(response != '')
+                              alert(response);
+                          location.reload();
+                      }
+                  });
 		      }
         });
     });

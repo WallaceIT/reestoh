@@ -1,26 +1,9 @@
 <?php
-//============================================================+
-// File name   : example_048.php
-// Begin       : 2009-03-20
-// Last Update : 2013-05-14
-//
-// Description : Example 048 for TCPDF class
-//               HTML tables and table headers
-//
-// Author: Nicola Asuni
-//
-// (c) Copyright:
-//               Nicola Asuni
-//               Tecnick.com LTD
-//               www.tecnick.com
-//               info@tecnick.com
-//============================================================+
-
 require_once('tcpdf/tcpdf.php');
 require_once('db.php');
 
 // Event data
-$events = $db -> query('SELECT * FROM events ORDER BY ID DESC LIMIT 0,1');
+$events = $db -> query('SELECT * FROM events WHERE active = TRUE');
 $count = $events->rowCount();
 if($count){
     $row_events = $events -> fetch(PDO::FETCH_ASSOC);
@@ -30,6 +13,10 @@ if($count){
 else{
     header("Location: index.php");
 }
+
+// Get printer
+$printer = $db -> query('SELECT name FROM printer') -> fetch(PDO::FETCH_ASSOC);
+$printer = $printer['name'];
 
 // Extract order data
 $order = $db -> query("SELECT * FROM orders_$eventID WHERE ID = $_GET[ID]");
@@ -108,6 +95,8 @@ $CAT_FOOTER_HTML = "<hr><div style=\"text-align:center\">#$order[ID] - $order[ti
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
+$pdf->setFontSubsetting(false);
+
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
 $pdf->SetAuthor('Reestoh');
@@ -146,7 +135,7 @@ for($ix=0; $ix<$pagecount;$ix++){
     // add a page
     $pdf->AddPage();
 
-    $pdf->SetFont('helvetica', '', 8);
+    $pdf->SetFont('courier', '', 8);
 
     // -----------------------------------------------------------------------------
 
@@ -229,13 +218,17 @@ for($ix=0; $ix<$pagecount;$ix++){
 
 // -----------------------------------------------------------------------------
 
-
-$js = "print(true);";
-$pdf->IncludeJS($js);
-
-
 //Close and output PDF document
-$pdf->Output('example_048.pdf', 'I');
+$content = $pdf->Output('', 'S');
+
+if($ph = printer_open($printer)) 
+{
+   // Set print mode to RAW and send PDF to printer 
+   printer_set_option($ph, PRINTER_MODE, "RAW"); 
+   printer_write($ph, $content); 
+   printer_close($ph); 
+} 
+else "Couldn't connect to printer!";
 
 //============================================================+
 // END OF FILE

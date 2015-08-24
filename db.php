@@ -1,4 +1,5 @@
 <?php
+// DATABASE CONFIGURATION
 $dbname = 'reestoh';
 $dsn = 'mysql:host=localhost;dbname='.$dbname;
 $username = 'root';

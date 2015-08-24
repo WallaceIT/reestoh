@@ -1,22 +1,20 @@
 <?php
     require('db.php');
     
-    $events = $db -> query('SELECT * FROM events ORDER BY ID DESC LIMIT 0,1');
+    $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
     $count = $events->rowCount();
     if($count){
         $row_events = $events -> fetch(PDO::FETCH_ASSOC);
         $event = $row_events['name'];
         $eventID = $row_events['ID'];
     }
-    else{
-        header("Location: manage.php");
-    };
+    else header("Location: admin.php?noactive");
 ?>
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="utf-8">
-    <title>Ordini - <?php echo $event; ?> - Reestoh 2014</title>
+    <title>Ordini - <?php echo $event; ?></title>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="js/jquery-ui.css"/>
     <script src="js/jquery.min.js" type="text/javascript"></script>
@@ -108,7 +106,14 @@
     
     $(".print_order").click(function(){
         var orderID = $(this).attr("order");
-        window.open('print.php?ID='+orderID);
+        $.ajax({
+            type: "POST",
+		    url: "print.php?ID="+orderID,
+            success: function(response){
+                if(response != '')
+                    alert(response);
+                }
+            });
     });
     
 </script>

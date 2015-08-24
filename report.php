@@ -1,16 +1,17 @@
 <?php
     require('db.php');
-    
-    $events = $db -> query('SELECT * FROM events ORDER BY ID DESC LIMIT 0,1');
+
+    if(isset($_GET['eventID']))
+        $events = $db -> query("SELECT * FROM events WHERE ID = $_GET[eventID]");
+    else
+        $events = $db -> query("SELECT * FROM events ORDER BY ID DESC LIMIT 0,1");
     $count = $events->rowCount();
     if($count){
         $row_events = $events -> fetch(PDO::FETCH_ASSOC);
         $event = $row_events['name'];
         $eventID = $row_events['ID'];
     }
-    else{
-        header("Location: manage.php");
-    }
+    else header("Location: admin.php?noactive");
 
     $cats = $db -> query("SELECT * FROM categories_$eventID");
     
@@ -19,7 +20,7 @@
 <html lang="it">
 <head>
     <meta charset="utf-8">
-    <title>Report - <?php echo $event; ?> - Reestoh 2014</title>
+    <title>Report - <?php echo $event; ?></title>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="js/jquery-ui.css"/>
     <script src="js/jquery.min.js" type="text/javascript"></script>
@@ -27,12 +28,14 @@
     
 </head>
 <body>
+    <?php if(!isset($_GET['eventID'])){ ?>
     <div id="toolbar">
         <a href="index.php" id="index" title="Nuovo Ordine"></a>
         <a href="report.php" id="report" title="Statistiche"></a>
         <a href="order_list.php" id="order_list" title="Lista Ordini"></a>
         <a href="manage.php" id="manage" title="Modifica Menù"></a>
     </div>
+    <?php ;} ?>
     <div id="event_name">
         <?php echo $event; ?> - Report
     </div>

@@ -1,23 +1,14 @@
 <?php
     require('db.php');
     if(!isset($_GET['default'])){
-        $events = $db -> query('SELECT * FROM events ORDER BY ID DESC LIMIT 0,1');
+        $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
         $count = $events->rowCount();
         if($count){
             $row_events = $events -> fetch(PDO::FETCH_ASSOC);
             $event = $row_events['name'];
             $eventID = $row_events['ID'];
         }
-        else{
-            $db -> query("INSERT INTO events (`ID`, `name`) VALUES (NULL, 'Nuovo Evento')");
-            $eventID = $db -> lastInsertId();
-            $event = 'Nuovo Evento';
-            $db -> query("CREATE TABLE categories_".$eventID." LIKE categories_0");
-            $db -> query("INSERT categories_".$eventID." SELECT * FROM categories_0;");
-            $db -> query("CREATE TABLE items_".$eventID." LIKE items_0");
-            $db -> query("INSERT items_".$eventID." SELECT * FROM items_0;");
-			$db -> query("CREATE TABLE orders_".$eventID." LIKE orders_0");
-        }
+        else header("Location: admin.php?noactive");
     }
     else {
         $event = 'Default';
@@ -28,7 +19,7 @@
 <html lang="it">
 <head>
     <meta charset="utf-8">
-    <title>Management - <?php echo $event; ?> - Reestoh 2014</title>
+    <title>Management - <?php echo $event; ?></title>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="js/jquery-ui.css"/>
     <script src="js/jquery.min.js" type="text/javascript"></script>
@@ -42,7 +33,6 @@
         <a href="order_list.php" id="order_list" title="Lista Ordini"></a>
         <a href="manage.php" id="manage" title="Modifica Menù"></a>
     </div>
-    <button id="mng_newevent">Nuovo Evento</button>
     <div id="event_name">
         <input type="text" id="mng_event_name" value="<?php echo $event; ?>">
     </div>
@@ -101,21 +91,6 @@
         SQL += "UPDATE events SET `name` = '"+$(this).val()+"' WHERE ID = <?php echo $eventID; ?>§";
         $("#mng_save").addClass("ui-state-error");
     });
-    
-    $("#mng_newevent").button()
-                      .click(function(){
-                          if (confirm('Creare un nuovo evento?')) {
-                                $.ajax({
-					               type: "POST",
-					               url: "functions.php",
-					               data: {func: 'newEvent'},
-					               dataType: "text",
-					               success: function(){
-						              document.location.reload(true);
-					               }
-				                });
-                            }
-                      });
     
     $("#mng_cat_container").accordion({ active: "false", collapsible: "true", header: "> div > h3"})
                            .sortable({
