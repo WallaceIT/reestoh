@@ -4,7 +4,10 @@
     $_POST['func']($db, $_POST);
  
 function processOrder($db, $post){
-    $sql = "INSERT INTO orders_$post[eventID] (`ID`,`customer`, `order_content`, `total`, `staff`) VALUES (NULL, '$post[customer]', '$post[order]', '$post[total]', $post[staff])";
+    
+    $time = date("d/m/Y H:i");
+    
+    $sql = "INSERT INTO orders_$post[eventID] (`ID`,`customer`, `order_content`, `total`, `staff`, `timestamp`) VALUES (NULL, '$post[customer]', '$post[order]', '$post[total]', $post[staff], '$time')";
 
     $db -> query($sql);
     $lastId = $db->lastInsertId();

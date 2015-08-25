@@ -33,6 +33,12 @@
     
 </head>
 <body>
+    <div id="toolbar">
+        <a href="index.php" id="index" title="Nuovo Ordine"></a>
+        <a href="report.php" id="report" title="Statistiche"></a>
+        <a href="order_list.php" id="order_list" title="Lista Ordini"></a>
+        <a href="manage.php" id="manage" title="Modifica Menù"></a>
+    </div>
     <div id="event_name_category">Reestoh Administration Panel</div>
     <div id="admin_messagebox"><?php if(isset($_GET['noactive'])) echo "ATTENZIONE: ATTIVARE UN EVENTO PER UTILIZZARE L'APPLICAZIONE"; ?></div>
     <div class="admin_opt_block">
@@ -109,6 +115,11 @@
     </div>
 <!------------ JQUERY -------------->
 <script type="text/javascript">
+    
+    $('#index').button({icons: {primary: 'ui-icon-document'}});
+    $('#report').button({icons: {primary: 'ui-icon-calculator'}});
+    $('#order_list').button({icons: {primary: 'ui-icon-note'}});
+    $('#manage').button({icons: {primary: 'ui-icon-key'}});
     
     $("#admin_save_printer").click(function(){
                         var SQL = "UPDATE printer SET `name` = '"+$("#admin_set_printer").val()+"'";

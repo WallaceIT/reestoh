@@ -93,7 +93,8 @@
             </form>
         </div>
     </div>
-    <div id="printing_dialog" class="hidden">Ordine in stampa, attendere...</div>
+    <div id="printing_dialog" class="hidden">Ordine in stampa, attendere...<br /><br /><button id="printing_dialog_close" class="hidden">Nuovo ordine</button></div>
+    <iframe id="frame" src="" class="hidden"></iframe>
 
 <!------------ JQUERY -------------->
 <script type="text/javascript">
@@ -171,7 +172,9 @@
               },
 		      dataType: "text",
 		      success: function(response){
-                  $.ajax({
+                  $("#frame").attr("src", "print.php?ID="+response);
+                  $("#printing_dialog_close").button().show().click(function(){location.reload();});
+                  /*$.ajax({
                       type: "POST",
 		              url: "print.php?ID="+response,
                       success: function(response){
@@ -179,7 +182,7 @@
                               alert(response);
                           location.reload();
                       }
-                  });
+                  });*/
 		      }
         });
     });

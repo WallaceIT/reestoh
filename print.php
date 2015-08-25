@@ -94,6 +94,7 @@ $CAT_FOOTER_HTML = "<hr><div style=\"text-align:center\">#$order[ID] - $order[ti
 
 // create new PDF document
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+$pdf->setPDFVersion('1.4');
 
 $pdf->setFontSubsetting(false);
 
@@ -217,18 +218,28 @@ for($ix=0; $ix<$pagecount;$ix++){
 
 
 // -----------------------------------------------------------------------------
+$filename = "order_$_GET[ID].pdf";
+
+$js = "print(true);";
+$pdf->IncludeJS($js);
+
 
 //Close and output PDF document
-$content = $pdf->Output('', 'S');
+$pdf->Output($filename, 'I');
+
+/*Close and output PDF document
+$content = $pdf->Output(__DIR__."\\".$filename, 'I');
+
 
 if($ph = printer_open($printer)) 
 {
-   // Set print mode to RAW and send PDF to printer 
-   printer_set_option($ph, PRINTER_MODE, "RAW"); 
-   printer_write($ph, $content); 
-   printer_close($ph); 
+    $content = file_get_contents("test.txt");
+    // Set print mode to RAW and send PDF to printer 
+    printer_set_option($ph, PRINTER_MODE, "RAW"); 
+    printer_write($ph, $content); 
+    printer_close($ph); 
 } 
-else "Couldn't connect to printer!";
+else "Couldn't connect to printer!";*/
 
 //============================================================+
 // END OF FILE
