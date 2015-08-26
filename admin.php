@@ -2,17 +2,6 @@
     require('db.php');
     if(!isset($_GET['default'])){
         $events = $db -> query('SELECT * FROM events ORDER BY ID ASC');
-        $count = $events->rowCount();
-        if($count == 0){
-            $db -> query("INSERT INTO events (`ID`, `name`, `active`) VALUES (NULL, 'Nuovo Evento', TRUE)");
-            $eventID = $db -> lastInsertId();
-            $event = 'Nuovo Evento';
-            $db -> query("CREATE TABLE categories_".$eventID." LIKE categories_0");
-            $db -> query("INSERT categories_".$eventID." SELECT * FROM categories_0;");
-            $db -> query("CREATE TABLE items_".$eventID." LIKE items_0");
-            $db -> query("INSERT items_".$eventID." SELECT * FROM items_0;");
-			$db -> query("CREATE TABLE orders_".$eventID." LIKE orders_0");
-        }
     }
     else {
         $event = 'Default';
@@ -40,33 +29,23 @@
         <a href="manage.php" id="manage" title="Modifica Menù"></a>
     </div>
     <div id="event_name_category">Reestoh Administration Panel</div>
-    <div id="admin_messagebox"><?php if(isset($_GET['noactive'])) echo "ATTENZIONE: ATTIVARE UN EVENTO PER UTILIZZARE L'APPLICAZIONE"; ?></div>
+    <div id="admin_messagebox"><?php if(isset($_GET['noactive'])) echo "ATTENZIONE: CREARE E/O ATTIVARE UN EVENTO PER UTILIZZARE L'APPLICAZIONE"; ?></div>
+    
+    <?php if(!$events) { ?>
+    
     <div class="admin_opt_block">
-        Stampante: 
-        <select id="admin_set_printer">
-        <?php
-
-            $cur_printer = $db -> query('SELECT name FROM printer') -> fetch(PDO::FETCH_ASSOC);
-            $cur_printer = $cur_printer['name'];
-
-            echo "<option value=\"$cur_printer\">$cur_printer</option>";
-
-            $getprt = printer_list(PRINTER_ENUM_LOCAL);
-
-            $printers =serialize($getprt);
-            $pp=str_replace(";s:11:\"DESCRIPTION\";",";s:4:\"DESC\";", str_replace(";s:7:\"COMMENT\";",";s:4:\"COMM\";",$printers));
-            $printers=unserialize($pp);
-
-            foreach($printers as $cur_printer)
-                echo "<option value=\"$cur_printer[NAME]\">$cur_printer[NAME]</option>";
-        ?>    
-        </select>
-        <button id="admin_save_printer">Salva</button>
+        <b>Attenzione!</b><br>
+        Nel database specificato in db.php non sono state trovate le tabelle di Reestoh.<br>
+        Premi sul pulsante Popola per creare le tabelle ed inserire i valori di default.<br>
+        <br>
+        <button id="admin_db_populate">Popola</button>
     </div>
+    
+    <?php ;} else { ?>
     
     <div class="admin_opt_block">
         Eventi
-        <br />
+        <br>
         <table id="admin_event_table">
             <tr>
                 <th>ID</th>
@@ -95,24 +74,24 @@
         }
         ?>
         </table>
-        <br />
+        <br>
         <button id="admin_newevent">Nuovo evento</button>
         
         <div id="admin_newevent_popup" class="hidden">
             <form id="admin_newevent_form">
                 <input type="text" length="25" id="admin_newevent_name" placeholder="Nome Evento" required>
-                <br /><br />
+                <br><br>
                 Copia dati da: 
                 <select id="admin_newevent_copy">
                     <option value="0" selected>Default</option>
                     <?php echo $newevent_options; ?>
                 </select>
-                <br /><br />
+                <br><br>
                 <input type="submit" id="admin_newevent_confirm" value="Crea nuovo evento">
             </form>
         </div>
         
-    </div>
+    </div> <?php ;} ?>
 <!------------ JQUERY -------------->
 <script type="text/javascript">
     
@@ -121,7 +100,7 @@
     $('#order_list').button({icons: {primary: 'ui-icon-note'}});
     $('#manage').button({icons: {primary: 'ui-icon-key'}});
     
-    $("#admin_save_printer").click(function(){
+    /*$("#admin_save_printer").click(function(){
                         var SQL = "UPDATE printer SET `name` = '"+$("#admin_set_printer").val()+"'";
                         $.ajax({
 					       type: "POST",
@@ -134,7 +113,18 @@
 						      alert(response);
 					       }
 				        });
-                     });
+                     });*/
+    
+    <?php if(!$events){ ?>
+    
+    $("#admin_db_populate").button().click(function(){
+        $.post("setup.php", function(response){
+            alert(response);
+            document.location.reload(true);
+        });
+    });
+    
+    <?php ;} else { ?>
     
     $(".activate_event").click(function(){
                           if (confirm("Rendere attivo questo evento?")) {
@@ -190,6 +180,8 @@
                                     }
                                  });
                              });
+    
+    <?php ;} ?>
 </script>
 </body>
 </html>

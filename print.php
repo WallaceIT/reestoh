@@ -2,6 +2,11 @@
 require_once('tcpdf/tcpdf.php');
 require_once('db.php');
 
+if(!isset($_SERVER['HTTP_REFERER'])){
+        header('HTTP/1.0 403 Forbidden');
+        die('You are not allowed to directly access this file.');     
+    }
+
 // Event data
 $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
 $count = $events->rowCount();
@@ -13,10 +18,6 @@ if($count){
 else{
     header("Location: index.php");
 }
-
-// Get printer
-$printer = $db -> query('SELECT name FROM printer') -> fetch(PDO::FETCH_ASSOC);
-$printer = $printer['name'];
 
 // Extract order data
 $order = $db -> query("SELECT * FROM orders_$eventID WHERE ID = $_GET[ID]");
@@ -223,24 +224,10 @@ $filename = "order_$_GET[ID].pdf";
 $js = "print(true);";
 $pdf->IncludeJS($js);
 
-
 //Close and output PDF document
 $pdf->Output($filename, 'I');
-
-/*Close and output PDF document
-$content = $pdf->Output(__DIR__."\\".$filename, 'I');
-
-
-if($ph = printer_open($printer)) 
-{
-    $content = file_get_contents("test.txt");
-    // Set print mode to RAW and send PDF to printer 
-    printer_set_option($ph, PRINTER_MODE, "RAW"); 
-    printer_write($ph, $content); 
-    printer_close($ph); 
-} 
-else "Couldn't connect to printer!";*/
 
 //============================================================+
 // END OF FILE
 //============================================================+
+?>

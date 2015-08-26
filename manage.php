@@ -2,6 +2,9 @@
     require('db.php');
     if(!isset($_GET['default'])){
         $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
+        if(!$events)
+            header("Location: admin.php");
+        
         $count = $events->rowCount();
         if($count){
             $row_events = $events -> fetch(PDO::FETCH_ASSOC);

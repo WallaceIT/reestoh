@@ -2,6 +2,9 @@
     require('db.php');
     
     $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
+    if(!$events)
+        header("Location: admin.php");
+
     $count = $events->rowCount();
     if($count){
         $row_events = $events -> fetch(PDO::FETCH_ASSOC);
@@ -74,7 +77,7 @@
         <?php echo $CATEGORIES_HTML;?>
     </div>
     <div id="controls_container">
-        <br />
+        <br>
         Riepilogo
         <div id="order_container">
              <!-- ORD -->
@@ -86,14 +89,14 @@
         <div id="confirm_container">
             <form id="confirm_form">
                 Servizio <input type="checkbox" id="staff" value="1">
-                <br /><br />
+                <br><br>
                 Nome Cliente <input type="text" id="customer" required>
-                <br /><br />
+                <br><br>
                 <input type="submit" id="order_confirm" value="Conferma">
             </form>
         </div>
     </div>
-    <div id="printing_dialog" class="hidden">Ordine in stampa, attendere...<br /><br /><button id="printing_dialog_close" class="hidden">Nuovo ordine</button></div>
+    <div id="printing_dialog" class="hidden">Ordine in stampa, attendere...<br><br><button id="printing_dialog_close" class="hidden">Nuovo ordine</button></div>
     <iframe id="frame" src="" class="hidden"></iframe>
 
 <!------------ JQUERY -------------->

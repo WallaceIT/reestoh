@@ -5,6 +5,10 @@
         $events = $db -> query("SELECT * FROM events WHERE ID = $_GET[eventID]");
     else
         $events = $db -> query("SELECT * FROM events ORDER BY ID DESC LIMIT 0,1");
+
+    if(!$events)
+        header("Location: admin.php");
+
     $count = $events->rowCount();
     if($count){
         $row_events = $events -> fetch(PDO::FETCH_ASSOC);
