@@ -15,41 +15,47 @@
         header("Location: admin.php?noactive");
     }
 
-    $CATEGORIES_HTML = "<div id=\"event_name_category\">$event</div>";
+    $CATEGORIES_HTML = "";
     $ORDER_HTML = "";
 
     $tabler_counter = 0;
 
-    $cats = $db -> query("SELECT * FROM categories_$eventID");
-    while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
-        $ID = $row_cats['ID'];
-        $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID ORDER BY name ASC");
-        $count = $items -> rowCount();
-        if($count){
-            
-            $tabler_counter++;
-            if($tabler_counter%2 == 0)
-                $CATEGORIES_HTML .= "<div style='heigth:0;clear:both'></div>";    
-            
-            $CATEGORIES_HTML .="<div class='category'><div class='category_name'>$row_cats[name]</div>";
+    $cats = $db -> query("SELECT * FROM categories_$eventID ORDER BY displayorder ASC");
+    if(!$cats){
+        echo "FAIL $eventID";
+    }
+    else{
+        while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
+            $ID = $row_cats['ID'];
+            $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID ORDER BY ID ASC");
+            $count = $items -> rowCount();
+            if($count){
 
-            while ($row_items = $items -> fetch(PDO::FETCH_ASSOC)) {
-                $itemID = $row_items['ID'];
-                $CATEGORIES_HTML .="<div id='sold_item_$itemID' item='$itemID' class='sold_item ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only'><span class='ui-button-text'>$row_items[sold]</span></div>
-                                    <div id='item_$itemID' item='$itemID' class='item ui-button ui-widget ui-state-default ui-button-text-only' price='$row_items[price]'>
-                                        $row_items[name] ($row_items[price]&euro;)
-                                        <input type='text' size='3' style='float:right' readonly value='0' id='qty_item_$itemID' item='$itemID' cat='$row_items[category]' class='qty_item'>
-                                    </div>
-                                    <div id='minus_item_$itemID' item='$itemID' class='minus_item ui-corner-right'>-</div>".PHP_EOL;
-               
-                $ORDER_HTML .= "<div id='order_item_$itemID' class='order_item hidden ui-state-default'>
-								<button item='$itemID' class='minus_item button_minus_item'>-</button>
-                                <input type='text' size='2' class='order_item_qty' value='0' readonly>
-                                <button item='$itemID' class='item button_plus_item' price='$row_items[price]'>+</button>
-                                    $row_items[name]
-                                </div>".PHP_EOL;
+                $tabler_counter++;
+                if($tabler_counter%2 == 0)
+                    $CATEGORIES_HTML .= "<div style='heigth:0;clear:both'></div>".PHP_EOL;    
+
+                $CATEGORIES_HTML .="<div class='category'>".PHP_EOL."<div class='category_name'>$row_cats[name]</div>".PHP_EOL;
+
+                while ($row_items = $items -> fetch(PDO::FETCH_ASSOC)) {
+                    if(strlen($row_items['name'])>25){$fsize="0.8em";}else{$fsize="1em";};
+                    $itemID = $row_items['ID'];
+                    $CATEGORIES_HTML .="<div id='sold_item_$itemID' item='$itemID' class='sold_item ui-button ui-widget ui-state-default ui-button-text-only'><span class='ui-button-text'>$row_items[sold]</span></div>
+                                        <div id='item_$itemID' item='$itemID' class='item ui-button ui-widget ui-state-default ui-button-text-only' price='$row_items[price]'>"
+                                            ."<span style='font-size:$fsize'>".mb_strimwidth($row_items['name'], 0, 26, '..')." ($row_items[price]&euro;)"."</span>".
+                                            "<input type='text' size='3' style='float:right' readonly value='0' id='qty_item_$itemID' item='$itemID' cat='$row_items[category]' class='qty_item'>
+                                        </div>
+                                        <div id='minus_item_$itemID' item='$itemID' class='minus_item ui-corner-right'>-</div>".PHP_EOL;
+
+                    $ORDER_HTML .= "<div id='order_item_$itemID' class='order_item hidden ui-state-default'>
+                                    <button item='$itemID' class='minus_item button_minus_item'>-</button>
+                                    <input type='text' size='2' class='order_item_qty' value='0' readonly>
+                                    <button item='$itemID' class='item button_plus_item' price='$row_items[price]'>+</button>
+                                        $row_items[name]
+                                    </div>".PHP_EOL;
+                }
+                $CATEGORIES_HTML .="</div>";
             }
-            $CATEGORIES_HTML .="</div>";
         }
     };
 
@@ -73,6 +79,7 @@
         <a href="manage.php" id="manage" title="Modifica Menù"></a>
     </div>
     <div id="categories_container">
+        <div id="event_name_category"><?php echo $event; ?></div>
         <!-- CAT -->
         <?php echo $CATEGORIES_HTML;?>
     </div>
@@ -113,6 +120,12 @@
     $("#order_confirm").button();
     
     $(".button_plus_item").button();
+    
+    w = $("#categories_container").width();
+    if(w/2 > 450)
+        $(".category").width(w/2-15);
+    else
+        $(".category").width(w-20);
     
     $(".item").button().click( function() {
         
@@ -177,15 +190,6 @@
 		      success: function(response){
                   $("#frame").attr("src", "print.php?ID="+response);
                   $("#printing_dialog_close").button().show().click(function(){location.reload();});
-                  /*$.ajax({
-                      type: "POST",
-		              url: "print.php?ID="+response,
-                      success: function(response){
-                          if(response != '')
-                              alert(response);
-                          location.reload();
-                      }
-                  });*/
 		      }
         });
     });

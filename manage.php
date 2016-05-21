@@ -40,21 +40,31 @@
         <input type="text" id="mng_event_name" value="<?php echo $event; ?>">
     </div>
     
-    <div id="mng_cat_container">        
+    <div id="mng_cat_container">
         <?php
-            $cats = $db -> query("SELECT * FROM categories_$eventID ORDER BY ID asc");
+            $item_lastID = 0;
+            $cat_lastID = 0;
+            $cats = $db -> query("SELECT * FROM categories_$eventID ORDER BY displayorder asc");
             while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
-                $ID = $row_cats['ID']; ?>
+                $ID = $row_cats['ID'];
+                if($ID > $cat_lastID) $cat_lastID = $ID;
+                ?>
                 <div class="group">
                     <h3 id="cat_<?php echo $ID;?>" cat="<?php echo $ID;?>" name="<?php echo $row_cats['name'];?>">
-                        <?php echo $row_cats['name'];?>
-                        <?php if($ID>1) {?><button style="float:right" class="remove_cat" cat="<?php echo $ID;?>"></button><?php ;} ?>
+                        <?php
+                            if($ID != 1) echo '<span class="handle ui-icon ui-icon-arrowthick-2-n-s"></span>';
+                            else echo '<span class="handle ui-icon ui-icon-locked"></span>';
+                            echo $row_cats['name'];
+                            if($ID>1) {?>
+                                <button style="float:right" class="remove_cat" cat="<?php echo $ID;?>"></button>
+                            <?php ;} ?>
                     </h3>
                     <div id="cat_<?php echo $ID;?>_items">
                         <?php
                             $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID");
                             while ($row_items = $items -> fetch(PDO::FETCH_ASSOC)) {
-                            $item_ID = $row_items['ID'];?>
+                            $item_ID = $row_items['ID'];
+                            if($item_ID > $item_lastID) $item_lastID = $item_ID; ?>
                                 <div class="mng_item ui-accordion-header ui-state-default ui-accordion-icons" cat="<?php echo $row_items['category'];?>" id="mng_item_<?php echo $item_ID;?>" item="<?php echo $item_ID;?>">
                                     <input size="30" type="text" id="mng_item_name_<?php echo $row_items['ID'];?>" value="<?php echo $row_items['name']; ?>" required>
                                     &euro; <input type="number" id="mng_item_price_<?php echo $item_ID;?>" min="0" step="0.5" value="<?php echo $row_items['price'];?>" required>
@@ -81,9 +91,10 @@
 <!------------ JQUERY -------------->
 <script type="text/javascript">
     
-    var cat_lastid = <?php echo $ID;?>;
-    var item_lastid = <?php echo $item_ID;?>;
+    var cat_lastid = <?php echo $cat_lastID;?>;
+    var item_lastid = <?php echo $item_lastID;?>;
     var SQL = '';
+    var order_changed = 0;
     
     $('#index').button({icons: {primary: 'ui-icon-document'}});
     $('#report').button({icons: {primary: 'ui-icon-calculator'}});
@@ -95,14 +106,14 @@
         $("#mng_save").addClass("ui-state-error");
     });
     
-    $("#mng_cat_container").accordion({ active: "false", collapsible: "true", header: "> div > h3"})
+    $("#mng_cat_container").accordion({ active: "false", collapsible: "true", icons: false, header: "> div > h3"})
                            .sortable({
                                 axis: "y",
-                                handle: "h3",
+                                handle: ".ui-icon-arrowthick-2-n-s",
                                 stop: function( event, ui ) {
                                     ui.item.children("h3").triggerHandler( "focusout" );
-                                    // Refresh accordion to handle new order
-                                    $( this ).accordion("refresh");
+                                    order_changed = 1;
+                                    $("#mng_save").addClass("ui-state-error");
                                 }
                             });
     
@@ -121,15 +132,15 @@
                             if($("#modal_add_cat_name").val()){
                                 cat_lastid += 1;
                                 $("#mng_cat_container").append(
-
-                                    "<div class='group'><h3 id='cat_"+cat_lastid+"' cat='"+cat_lastid+"' name='"+$('#modal_add_cat_name').val()+"' class='newcat'>"+$('#modal_add_cat_name').val()+"<button style='float:right' class='remove_cat' cat='"+cat_lastid+"'></button></h3><div id='cat_"+cat_lastid+"_items'><br><button class='mng_add_item' cat='"+cat_lastid+"'>+</button></div></div>"
-                                ).accordion( "refresh" );
+                                    "<div class='group'><h3 id='cat_"+cat_lastid+"' cat='"+cat_lastid+"' name='"+$('#modal_add_cat_name').val()+"' class='newcat'><span class='handle ui-icon ui-icon-arrowthick-2-n-s'></span>"+$('#modal_add_cat_name').val()+"<button style='float:right' class='remove_cat' cat='"+cat_lastid+"'></button></h3><div id='cat_"+cat_lastid+"_items'><br><button class='mng_add_item' cat='"+cat_lastid+"'>+</button></div></div>"
+                                ).accordion( "refresh" ).sortable( "refresh" );
                                 
                                 $(".remove_cat").button({icons:{primary: "ui-icon-closethick"},text:"false"});
 
                                 $(".mng_add_item").button({ icons: { primary: "ui-icon-plusthick" },
                                                             text: false})
 
+                                order_changed = 1;
                                 $("#mng_save").addClass("ui-state-error");
                                 $( "#mng_modal_add_cat" ).dialog( "close" );
                         }
@@ -155,6 +166,7 @@
             
             $("#cat_"+id).remove();
             $("#cat_"+id+"_items").remove();
+            order_changed = 1;
             $("#mng_save").addClass("ui-state-error");
         }
     });
@@ -196,6 +208,11 @@
                           SQL += "INSERT INTO `categories_<?php echo $eventID; ?>` (`id`, `name`) VALUES ('"+$(this).attr('cat')+"','"+$(this).attr('name')+"')§";
                           $(this).removeClass("newcat");
                       });
+                      if(order_changed == 1){
+                          $(".group").each(function(){
+                              SQL += "UPDATE categories_<?php echo $eventID; ?> SET `displayorder` = '"+$(this).index()+"' WHERE ID = "+$(this).children().attr('cat')+"§";
+                          });
+                      }
                       // new items
                       $(".mng_item_new").each(function(){
                           if($('#mng_item_name_'+$(this).attr('item')).val()){

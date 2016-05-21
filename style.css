@@ -8,7 +8,8 @@ html, body{
 }
 
 body{
-    background-color: #7aadff;
+    background-color: #444466;
+    color: aliceblue;
     font-family: monospace;
     overflow-y:hidden;
     -webkit-touch-callout: none;
@@ -112,8 +113,8 @@ div#event_name_category{
 
 div.category{
     float: left;
-    min-width: 380px;
-    max-width: 39em;
+    /*min-width: 380px;
+    max-width: 39em;*/
     padding-top: 10px;
     margin: 0 auto;
     text-align: center;
@@ -121,7 +122,7 @@ div.category{
 }
 div.category_name{
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1.5em;
 }
 
 div.sold_item{
@@ -135,7 +136,7 @@ div.sold_item{
 div.item{
     float: left;
     width: 78%;
-    height: auto;
+    overflow: hidden;
     margin: 0;
 }
 
@@ -155,6 +156,10 @@ div.minus_item{
 }
 
 /* manage.php */
+div#mng_cat_container{
+    width: 90%;
+    margin: 0 auto;
+}
 input#mng_save{
     float: right;
     margin: 10px 0;
@@ -175,13 +180,19 @@ input#mng_event_name{
 button.mng_add_item{
     margin-top:10px;
 }
+span.handle{
+    float:left;
+    transform: scale(2);
+    margin-right: 5px;
+}
+    
 
 /* order_list.php */
 div#olist_orders_container{
     width: 90%;
     margin: 0 auto;
     height: 95%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 /* report.php */

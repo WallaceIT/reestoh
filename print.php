@@ -56,11 +56,11 @@ foreach($items as $item){
     $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
     
     // Receipt
-    $receipt .= "<tr><td width=\"15%\">$qty</td><td width=\"70%\">$item_detail[name]</td><td width=\"15%\">".$qty*$item_detail['price']."&euro;</td></tr>";
+    $receipt .= "<tr><td width=\"10%\">$qty</td><td width=\"75%\">$item_detail[name]</td><td width=\"15%\">".$qty*$item_detail['price']."&euro;</td></tr>";
     $receipt_total += $qty*$item_detail['price'];
     
     // New category
-    if($cat > $cur_cat){
+    if($cat != $cur_cat){
         
         $cur_pointer++;
         
@@ -70,7 +70,7 @@ foreach($items as $item){
         $cat_name = $db -> query("SELECT name FROM categories_$eventID WHERE ID = $cat");
         $cat_name = $cat_name -> fetch(PDO::FETCH_ASSOC);
         $CAT_HTML[][0] = $cat_name['name'];
-        $CAT_HTML[$cur_pointer][1] = "<tr><td width=\"15%\" style=\"text-align:right\">$qty</td><td width=\"85%\">$item_detail[name]</td></tr>";
+        $CAT_HTML[$cur_pointer][1] = "<tr><td width=\"10%\" style=\"text-align:right\">$qty</td><td width=\"90%\">$item_detail[name]</td></tr>";
         $cur_cat = $cat;
     }
     else $CAT_HTML[$cur_pointer][1] .= "<tr><td style=\"text-align:right\">$qty</td><td>$item_detail[name]</td></tr>";
@@ -82,7 +82,7 @@ for($i=$has_special; $i<=$cur_pointer;$i++){
 }
 
 // Receipt
-$receipt .= "<tr><td width=\"15%\"></td><td width=\"70%\" style=\"text-align:right\">TOTALE:</td><td width=\"15%\">$receipt_total&euro;</td></tr>";
+$receipt .= "<tr><td width=\"10%\"></td><td width=\"75%\" style=\"text-align:right\">TOTALE:</td><td width=\"15%\">$receipt_total&euro;</td></tr>";
 $cur_pointer++;
 $CAT_HTML[][0] = "*COPIA PER IL CLIENTE*";
 $CAT_HTML[$cur_pointer][1] = "<br><div style=\"text-align:center\">*COPIA PER IL CLIENTE*</div><br><table border=\"1\" cellpadding=\"1mm\">$receipt</table>";
@@ -137,7 +137,7 @@ for($ix=0; $ix<$pagecount;$ix++){
     // add a page
     $pdf->AddPage();
 
-    $pdf->SetFont('courier', '', 8);
+    $pdf->SetFont('courierB', '', 10);
 
     // -----------------------------------------------------------------------------
 
@@ -169,12 +169,6 @@ for($ix=0; $ix<$pagecount;$ix++){
             <td>'.($cellcount>(4*$ix+0)?$CAT_FOOTER_HTML:"").'</td>
             <td></td>
             <td>'.($cellcount>(4*$ix+1)?$CAT_FOOTER_HTML:"").'</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td height="5mm"></td>
-            <td></td>
-            <td></td>
             <td></td>
         </tr>
 

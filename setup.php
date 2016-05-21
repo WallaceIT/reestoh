@@ -16,10 +16,11 @@
     $db -> query("CREATE TABLE IF NOT EXISTS `categories_0` (
     `ID` tinyint(4) NOT NULL AUTO_INCREMENT,
     `name` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+    `displayorder` tinyint(4) NOT NULL,
     PRIMARY KEY (`ID`)
     ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1") or die("Unable to create table 'categories_0'");;
 
-    $db -> query("INSERT INTO `categories_0` (`ID`, `name`) VALUES (1, 'Speciale')") or die("Unable to insert default values into 'categories_0'");;
+    $db -> query("INSERT INTO `categories_0` (`ID`, `name`, `displayorder`) VALUES (1, 'Speciale', 0)") or die("Unable to insert default values into 'categories_0'");;
 
     $db -> query("CREATE TABLE IF NOT EXISTS `items_0` (
     `ID` smallint(11) NOT NULL AUTO_INCREMENT,
