@@ -34,8 +34,9 @@ div#event_name{
     text-align: center;
     font-family: fantasy;
     font-size: 1.5em;
-    border-bottom: solid 1px #2e7fb1;
+    border-bottom: solid 1px #f0f8ff;
     height: 5%;
+    padding-top: 1%;
     width: inherit;
 }
 
@@ -78,7 +79,7 @@ div#order_container{
     overflow-x: hidden;
     margin-bottom: 2%;
     margin-top: 5px;
-    border: solid 1px #2e7fb1;
+    border: solid 1px #f0f8ff;
 }
 
 div.order_item{
@@ -123,6 +124,11 @@ div.category{
 div.category_name{
     font-weight: bold;
     font-size: 1.5em;
+}
+
+div.item_container{
+    float: left;
+    margin: 0;
 }
 
 div.sold_item{
@@ -214,7 +220,7 @@ table.report_cat_table{
     margin: 0 auto;
 }
 table.report_cat_table,td,th{
-    border: solid 1px black;
+    border: solid 1px #f0f8ff;
     border-collapse:collapse;
     padding: 10px;
 }
@@ -231,11 +237,16 @@ div.admin_opt_block{
     width: 90%;
     margin: 10px auto;
     padding: 10px;
-    background-color: #9ccfff;
+    background-color: #606080;
     font-size: 1.2em;
 }
 div#admin_messagebox{
     text-align: center;
      font-size: 1.5em;
     color: red;
+}
+
+tr.active_event{
+    background-color: #f0f8ff;
+    color: #000000;
 }

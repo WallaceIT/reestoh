@@ -4,7 +4,7 @@
     if(isset($_GET['eventID']))
         $events = $db -> query("SELECT * FROM events WHERE ID = $_GET[eventID]");
     else
-        $events = $db -> query("SELECT * FROM events ORDER BY ID DESC LIMIT 0,1");
+        $events = $db -> query("SELECT * FROM events WHERE active = TRUE");
 
     if(!$events)
         header("Location: admin.php");
@@ -25,24 +25,15 @@
 <head>
     <meta charset="utf-8">
     <title>Report - <?php echo $event; ?></title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="js/jquery-ui.css"/>
     <script src="js/jquery.min.js" type="text/javascript"></script>
     <script src="js/jquery-ui.min.js" type="text/javascript"></script>
-    
 </head>
 <body>
-    <?php if(!isset($_GET['eventID'])){ ?>
-    <div id="toolbar">
-        <a href="index.php" id="index" title="Nuovo Ordine"></a>
-        <a href="report.php" id="report" title="Statistiche"></a>
-        <a href="order_list.php" id="order_list" title="Lista Ordini"></a>
-        <a href="manage.php" id="manage" title="Modifica Menù"></a>
-    </div>
-    <?php ;} ?>
-    <div id="event_name">
-        <?php echo $event; ?> - Report
-    </div>
+    <?php if(!isset($_GET['eventID'])) include('toolbar.htm'); ?>
+    <div id="event_name"><?php echo $event; ?> - Report</div>
     <div id="report_container">
     <?php
         $total = 0;
@@ -89,14 +80,5 @@
         echo "<div id='report_total'>Totale: $total&euro;</div>";
     ?>
     </div>
-
-<script type="text/javascript">
-    
-    $('#index').button({icons: {primary: 'ui-icon-document'}});
-    $('#report').button({icons: {primary: 'ui-icon-calculator'}});
-    $('#order_list').button({icons: {primary: 'ui-icon-note'}});
-    $('#manage').button({icons: {primary: 'ui-icon-key'}});
-    
-</script>
 </body>
 </html>

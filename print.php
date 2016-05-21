@@ -56,7 +56,7 @@ foreach($items as $item){
     $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
     
     // Receipt
-    $receipt .= "<tr><td width=\"10%\">$qty</td><td width=\"75%\">$item_detail[name]</td><td width=\"15%\">".$qty*$item_detail['price']."&euro;</td></tr>";
+    $receipt .= "<tr><td width=\"7mm\">$qty</td><td width=\"67mm\">$item_detail[name]</td><td width=\"16mm\">".$qty*$item_detail['price']."&euro;</td></tr>";
     $receipt_total += $qty*$item_detail['price'];
     
     // New category
@@ -70,7 +70,7 @@ foreach($items as $item){
         $cat_name = $db -> query("SELECT name FROM categories_$eventID WHERE ID = $cat");
         $cat_name = $cat_name -> fetch(PDO::FETCH_ASSOC);
         $CAT_HTML[][0] = $cat_name['name'];
-        $CAT_HTML[$cur_pointer][1] = "<tr><td width=\"10%\" style=\"text-align:right\">$qty</td><td width=\"90%\">$item_detail[name]</td></tr>";
+        $CAT_HTML[$cur_pointer][1] = "<tr><td width=\"9mm\" style=\"text-align:right\">$qty</td><td width=\"81mm\">$item_detail[name]</td></tr>";
         $cur_cat = $cat;
     }
     else $CAT_HTML[$cur_pointer][1] .= "<tr><td style=\"text-align:right\">$qty</td><td>$item_detail[name]</td></tr>";
@@ -82,7 +82,7 @@ for($i=$has_special; $i<=$cur_pointer;$i++){
 }
 
 // Receipt
-$receipt .= "<tr><td width=\"10%\"></td><td width=\"75%\" style=\"text-align:right\">TOTALE:</td><td width=\"15%\">$receipt_total&euro;</td></tr>";
+$receipt .= "<tr><td width=\"7mm\"></td><td width=\"67mm\" style=\"text-align:right\">TOTALE:</td><td width=\"16mm\">$receipt_total&euro;</td></tr>";
 $cur_pointer++;
 $CAT_HTML[][0] = "*COPIA PER IL CLIENTE*";
 $CAT_HTML[$cur_pointer][1] = "<br><div style=\"text-align:center\">*COPIA PER IL CLIENTE*</div><br><table border=\"1\" cellpadding=\"1mm\">$receipt</table>";

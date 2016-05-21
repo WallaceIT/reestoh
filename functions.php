@@ -79,6 +79,13 @@ function activateEvent($db, $post){
     $db -> query("UPDATE events SET `active` = TRUE WHERE `id` = '$post[eventID]'");
  };
 
+function truncateEvent($db, $post){
+    $db -> query("TRUNCATE TABLE `orders_$post[eventID]`");
+    $db -> query("UPDATE items_$post[eventID] SET `sold` = 0");
+    $db -> query("UPDATE items_$post[eventID] SET `staff_given` = 0");
+    
+ };
+
 function newEvent($db, $post){
     $db -> query("UPDATE events SET `active` = FALSE");
     $db -> query("INSERT INTO events (`ID`, `name`, `active`) VALUES (NULL, '$post[name]', TRUE)");
@@ -87,6 +94,8 @@ function newEvent($db, $post){
     $db -> query("INSERT categories_$lastID SELECT * FROM categories_$post[copyID];");
     $db -> query("CREATE TABLE items_$lastID LIKE items_$post[copyID]");
     $db -> query("INSERT items_$lastID SELECT * FROM items_$post[copyID];");
+    $db -> query("UPDATE items_$lastID SET `sold` = 0");
+    $db -> query("UPDATE items_$lastID SET `staff_given` = 0");
     $db -> query("CREATE TABLE orders_$lastID LIKE orders_$post[copyID]");
  };
 
