@@ -50,8 +50,13 @@ $(window).load(function() {
         });
 
         var staff = 0;
-        if($("#staff").is(":checked"))
+        if($("#staff").is(":checked")){
             staff = 1;
+            $("#dialog_total").html("0.00");
+        }
+        else{
+            $("#dialog_total").html($("#total").val());
+        }
 
         $("#printing_dialog").dialog({
             modal: true,
@@ -73,8 +78,12 @@ $(window).load(function() {
             },
             dataType: "text",
             success: function(response){
-                $("#frame").attr("src", "print.php?ID="+response);
+                $("#frame").attr("src", "print/print_html.php?ID="+response);
                 $("#printing_dialog_close").button().show().click(function(){location.reload();});
+            },
+            error: function(){
+                alert("Si è verificato un errore. Ritenta.");
+                $("#printing_dialog").dialog('close');
             }
         });
     });

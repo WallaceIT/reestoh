@@ -1,6 +1,6 @@
 <?php
 require_once('tcpdf/tcpdf.php');
-require_once('db.php');
+require_once('../db.php');
 
 if(!isset($_SERVER['HTTP_REFERER'])){
         header('HTTP/1.0 403 Forbidden');
@@ -16,7 +16,7 @@ if($count){
     $eventID = $row_events['ID'];
 }
 else{
-    header("Location: index.php");
+    header("Location: ../index.php");
 }
 
 // Extract order data
@@ -26,7 +26,7 @@ if($count){
     $order = $order -> fetch(PDO::FETCH_ASSOC);
 }
 else{
-    header("Location: index.php");
+    header("Location: ../index.php");
 };
 
 $items = preg_split("/;/", $order['order_content'], -1, PREG_SPLIT_NO_EMPTY);

@@ -104,7 +104,7 @@
             </form>
         </div>
     </div>
-    <div id="printing_dialog" class="hidden">Ordine in stampa, attendere...<br><br><button id="printing_dialog_close" class="hidden">Nuovo ordine</button></div>
+    <div id="printing_dialog" class="hidden">Ordine in stampa.<br>Totale da riscuotere: <span id="dialog_total" style="font-weight:bold;"></span>&euro;<br><br><button id="printing_dialog_close" class="hidden">Nuovo ordine</button></div>
     <iframe id="frame" src="" class="hidden"></iframe>
 </body>
 </html>

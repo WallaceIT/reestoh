@@ -54,7 +54,7 @@ $(window).load(function() {
         var orderID = $(this).attr("order");
         $.ajax({
             type: "POST",
-		    url: "print.php?ID="+orderID,
+		    url: "print/print_html.php?ID="+orderID,
             success: function(response){
                 if(response != '')
                     alert(response);
