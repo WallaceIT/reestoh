@@ -53,7 +53,7 @@
             </tr>
         <?php while($row_events = $events -> fetch(PDO::FETCH_ASSOC)){            
             echo "
-            <tr ".($row_events['active']?"class='active_event'":"")."$active_addition>
+            <tr ".($row_events['active']?"class='active_event'":"").">
                 <td>$row_events[ID]</td>
                 <td>$row_events[name]</td>
                 <td>".($row_events['active']?"_ATTIVO_":"<button class=\"activate_event\" evID=\"$row_events[ID]\">Attiva</button>")."</td>
