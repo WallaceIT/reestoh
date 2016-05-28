@@ -31,7 +31,7 @@
     
     <div class="admin_opt_block">
         <b>Attenzione!</b><br>
-        Nel database specificato in db.php non sono state trovate le tabelle di Reestoh.<br>
+        Nel database specificato in config.php non sono state trovate le tabelle di Reestoh.<br>
         Premi sul pulsante Popola per creare le tabelle ed inserire i valori di default.<br>
         <br>
         <button id="admin_db_populate">Popola</button>
