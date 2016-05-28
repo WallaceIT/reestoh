@@ -1,10 +1,12 @@
 <?php
-require_once('../db.php');
+require_once('../config.php');
 
+/*
 if(!isset($_SERVER['HTTP_REFERER'])){
         header('HTTP/1.0 403 Forbidden');
         die('You are not allowed to directly access this file.');     
     }
+*/
 
 // Event data
 $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
@@ -54,14 +56,6 @@ foreach($items as $item){
     $item_detail = $db -> query($sql);
     $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
     
-    // Receipt
-    $receipt .= "<tr>
-                    <td width=\"7%\" style=\"text-align:center\">$qty</td>
-                    <td width=\"78%\">$item_detail[name]</td>
-                    <td width=\"15%\" style=\"text-align:right\">".$qty*$item_detail['price']."&euro;</td>
-                </tr>".PHP_EOL;
-    $receipt_total += $qty*$item_detail['price'];
-    
     // New category
     if($cat != $cur_cat){
         $cur_pointer++;
@@ -82,6 +76,16 @@ foreach($items as $item){
                                             <td style=\"text-align:center\">$qty</td>
                                             <td>$item_detail[name]</td>
                                         </tr>".PHP_EOL;
+
+    if($CONFIG_PRINT_RECEIPT){                                  
+        // Receipt
+        $receipt .= "<tr>
+                        <td width=\"7%\" style=\"text-align:center\">$qty</td>
+                        <td width=\"78%\">$item_detail[name]</td>
+                        <td width=\"15%\" style=\"text-align:right\">".$qty*$item_detail['price']."&euro;</td>
+                    </tr>".PHP_EOL;
+        $receipt_total += $qty*$item_detail['price'];
+    }
 }
 
 // Normal categories (starts from $has_special, equal to 1 only if special elements are present)
@@ -93,18 +97,22 @@ for($i=$has_special; $i<=$cur_pointer;$i++){
                         <table style=\"width:100%;border-collapse:collapse;\" border=\"1\">".$CAT_HTML[$i][1].($has_special?$CAT_HTML[0][1]:'')."</table>".PHP_EOL;
 }
 
-// Receipt
-$receipt .= "<tr>
-                <td width=\"7%\"></td>
-                <td width=\"78%\" style=\"text-align:right\">TOTALE:</td>
-                <td width=\"15%\" style=\"text-align:right\">$receipt_total&euro;</td>
-            </tr>".PHP_EOL;
-$cur_pointer++;
-$CAT_HTML[][0] = "*COPIA PER IL CLIENTE*";
-$CAT_HTML[$cur_pointer][1] = "<br>
-                              <div style=\"text-align:center\">*COPIA PER IL CLIENTE*</div>
-                              <br>
-                              <table style=\"width:100%;border-collapse:collapse;\" border=\"1\" cellpadding=\"1mm\">$receipt</table>".PHP_EOL;
+if($CONFIG_PRINT_RECEIPT){
+    // Receipt
+    $cur_pointer++;
+    $CAT_HTML[][0] = "*COPIA PER IL CLIENTE*";
+    $CAT_HTML[$cur_pointer][1] = "<br>
+                                <div style=\"text-align:center\">*COPIA PER IL CLIENTE*</div>
+                                <br>
+                                <table style=\"width:100%;border-collapse:collapse;\" border=\"1\" cellpadding=\"1mm\">
+                                    $receipt
+                                    <tr>
+                                        <td width=\"7%\"></td>
+                                        <td width=\"78%\" style=\"text-align:right\">TOTALE:</td>
+                                        <td width=\"15%\" style=\"text-align:right\">$receipt_total&euro;</td>
+                                    </tr>
+                                </table>".PHP_EOL;
+}
 
 // Header and footer
 $CAT_HEADER_HTML = "<div style=\"text-align:center\"><b>$event</b></div><hr>".PHP_EOL;
@@ -115,9 +123,6 @@ $CAT_FOOTER_HTML = "<hr><div style=\"text-align:center\">#$order[ID] - $order[ti
 
 $pagecount = ($cur_pointer+1-$has_special)/2;
 $cellcount = ($cur_pointer+1-$has_special);
-
-if(isset($_GET['papersize']) && $_GET['papersize'] == 'a5') $a5 = true;
-else $a5 = false;
 
 ?>
 

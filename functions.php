@@ -1,5 +1,5 @@
 <?php 
-    require("db.php");
+    require("config.php");
 
     $_POST['func']($db, $_POST);
  

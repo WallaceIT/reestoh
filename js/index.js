@@ -78,7 +78,7 @@ $(window).load(function() {
             },
             dataType: "text",
             success: function(response){
-                $("#frame").attr("src", "print/print_html.php?ID="+response);
+                $("#frame").attr("src", "print/print_"+printMethod+".php?ID="+response);
                 $("#printing_dialog_close").button().show().click(function(){
                     $("#frame").attr("src", "blank.htm");
                     setTimeout(function(){location.reload();}, 1000);

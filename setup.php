@@ -1,5 +1,5 @@
 <?php
-    require('db.php');
+    require('config.php');
 
     if(!isset($_SERVER['HTTP_REFERER'])){
         header('HTTP/1.0 403 Forbidden');

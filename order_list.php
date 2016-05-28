@@ -1,5 +1,5 @@
 <?php
-    require('db.php');
+    require('config.php');
     
     $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
     if(!$events)

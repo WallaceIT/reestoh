@@ -1,5 +1,5 @@
 <?php
-    require('db.php');
+    require('config.php');
     
     $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
     if(!$events)
@@ -74,6 +74,7 @@
     <link rel="stylesheet" href="js/jquery-ui.css"/>
     <script src="js/jquery.min.js" type="text/javascript"></script>
     <script src="js/jquery-ui.min.js" type="text/javascript"></script>
+    <script type="text/javascript">var printMethod = 'thermal';</script>
     <script src="js/index.js" type="text/javascript"></script>
 </head>
 <body>

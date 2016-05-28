@@ -1,5 +1,5 @@
 <?php
-    require('db.php');
+    require('config.php');
     if(!isset($_GET['default'])){
         $events = $db -> query('SELECT * FROM events ORDER BY ID ASC');
     }

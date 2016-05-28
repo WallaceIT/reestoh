@@ -1,5 +1,5 @@
 <?php
-    require('db.php');
+    require('config.php');
 
     if(isset($_GET['eventID']))
         $events = $db -> query("SELECT * FROM events WHERE ID = $_GET[eventID]");
