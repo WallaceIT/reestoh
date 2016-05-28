@@ -1,6 +1,6 @@
 <?php
 require_once('tcpdf/tcpdf.php');
-require_once('../db.php');
+require_once('../config.php');
 
 if(!isset($_SERVER['HTTP_REFERER'])){
         header('HTTP/1.0 403 Forbidden');

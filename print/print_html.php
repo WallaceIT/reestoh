@@ -1,12 +1,10 @@
 <?php
 require_once('../config.php');
 
-/*
 if(!isset($_SERVER['HTTP_REFERER'])){
         header('HTTP/1.0 403 Forbidden');
         die('You are not allowed to directly access this file.');     
     }
-*/
 
 // Event data
 $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
