@@ -1,10 +1,12 @@
 <?php
 require_once('../config.php');
 
+/*
 if(!isset($_SERVER['HTTP_REFERER'])){
         header('HTTP/1.0 403 Forbidden');
         die('You are not allowed to directly access this file.');     
     }
+    */
 
 // Event data
 $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
@@ -63,16 +65,16 @@ foreach($items as $item){
         
         $cat_name = $db -> query("SELECT name FROM categories_$eventID WHERE ID = $cat");
         $cat_name = $cat_name -> fetch(PDO::FETCH_ASSOC);
-        $CAT_HTML[][0] = "<b>$cat_name[name]</b>";
+        $CAT_HTML[][0] = "<b class=\"font_items\">$cat_name[name]</b>";
         $CAT_HTML[$cur_pointer][1] = "<tr>
-                                        <td style=\"width:10%;text-align:center;\">$qty</td>
-                                        <td style=\"width:90%;\">$item_detail[name]</td>
+                                        <td class=\"font_items\" style=\"width:10%;text-align:center;\">$qty</td>
+                                        <td class=\"font_items\" style=\"width:90%;\">$item_detail[name]</td>
                                       </tr>".PHP_EOL;
         $cur_cat = $cat;
     }
     else $CAT_HTML[$cur_pointer][1] .= "<tr>
-                                            <td style=\"text-align:center\">$qty</td>
-                                            <td>$item_detail[name]</td>
+                                            <td class=\"font_items\" style=\"text-align:center\">$qty</td>
+                                            <td class=\"font_items\">$item_detail[name]</td>
                                         </tr>".PHP_EOL;
 
     if($CONFIG_PRINT_RECEIPT){                                  
@@ -80,7 +82,7 @@ foreach($items as $item){
         $receipt .= "<tr>
                         <td width=\"7%\" style=\"text-align:center\">$qty</td>
                         <td width=\"78%\">$item_detail[name]</td>
-                        <td width=\"15%\" style=\"text-align:right\">".$qty*$item_detail['price']."&euro;</td>
+                        <td width=\"15%\" style=\"text-align:right;\">".$qty*$item_detail['price']."&euro;</td>
                     </tr>".PHP_EOL;
         $receipt_total += $qty*$item_detail['price'];
     }
