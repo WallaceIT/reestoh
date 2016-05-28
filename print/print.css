@@ -28,14 +28,5 @@ body{
 }
 
 .aligner{
-    height: 123mm;
-}
-
-.breaker{
-    width: 100%;
-}
-
-.spacer{
-    width: 100%;
-    height: 5mm;
+    height: 120mm;
 }

@@ -147,7 +147,7 @@ for($ix=0; $ix<$pagecount;$ix++){
             <td style="width:10mm"></td>
             <td style="width:90mm">'.($cellcount>(2*$ix+1)?$CAT_HEADER_HTML:"").'</td>
         </tr>
-        <tr style="height:123mm">
+        <tr style="height:120mm">
             <td><div class="aligner">'.($cellcount>(2*$ix+0)?$CAT_HTML[(2*$ix+0+$has_special)][1]:"").'</div></td>
             <td></td>
             <td><div class="aligner">'.($cellcount>(2*$ix+1)?$CAT_HTML[(2*$ix+1+$has_special)][1]:"").'</div></td>
@@ -164,7 +164,7 @@ for($ix=0; $ix<$pagecount;$ix++){
      if($ix%2)
         echo '<p style="page-break-after: always;"></p>';
      elseif($ix+1 < $pagecount)
-        echo '<p style="height:2mm; overflow-y:hide;"></p>';
+        echo '<div style="height:1mm; overflow-y:hide;"></div>';
 }
 ?>
     
