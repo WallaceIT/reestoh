@@ -113,8 +113,11 @@ $CAT_FOOTER_HTML = "<hr><div style=\"text-align:center\">#$order[ID] - $order[ti
 // ---------------------------------------------------------
 
 
-$pagecount = ($cur_pointer+1-$has_special)/4;
+$pagecount = ($cur_pointer+1-$has_special)/2;
 $cellcount = ($cur_pointer+1-$has_special);
+
+if(isset($_GET['papersize']) && $_GET['papersize'] == 'a5') $a5 = true;
+else $a5 = false;
 
 ?>
 
@@ -132,45 +135,31 @@ $cellcount = ($cur_pointer+1-$has_special);
 <?php
 for($ix=0; $ix<$pagecount;$ix++){
     echo '
-    <div class="page">
+    <div class="page_a5">
     <table width="100%" cellspacing="0" cellpadding="0">
         <tr style="height:7.5mm">
-            <td style="width:90mm;">'.($cellcount>(4*$ix+0)?$CAT_HEADER_HTML:"").'</div></td>
-            <td style="width:10mm;"></td>
-            <td style="width:90mm;">'.($cellcount>(4*$ix+1)?$CAT_HEADER_HTML:"").'</td>
+            <td style="width:90mm">'.($cellcount>(2*$ix+0)?$CAT_HEADER_HTML:"").'</div></td>
+            <td style="width:10mm"></td>
+            <td style="width:90mm">'.($cellcount>(2*$ix+1)?$CAT_HEADER_HTML:"").'</td>
         </tr>
-        <tr style="height:120mm">
-            <td><div class="aligner">'.($cellcount>(4*$ix+0)?$CAT_HTML[(4*$ix+0+$has_special)][1]:"").'</div></td>
+        <tr style="height:123mm">
+            <td><div class="aligner">'.($cellcount>(2*$ix+0)?$CAT_HTML[(2*$ix+0+$has_special)][1]:"").'</div></td>
             <td></td>
-            <td><div class="aligner">'.($cellcount>(4*$ix+1)?$CAT_HTML[(4*$ix+1+$has_special)][1]:"").'</div></td>
+            <td><div class="aligner">'.($cellcount>(2*$ix+1)?$CAT_HTML[(2*$ix+1+$has_special)][1]:"").'</div></td>
         </tr>
         <tr style="height=:7.5mm">
-            <td>'.($cellcount>(4*$ix+0)?$CAT_FOOTER_HTML:"").'</td>
+            <td>'.($cellcount>(2*$ix+0)?$CAT_FOOTER_HTML:"").'</td>
             <td></td>
-            <td>'.($cellcount>(4*$ix+1)?$CAT_FOOTER_HTML:"").'</td>
+            <td>'.($cellcount>(2*$ix+1)?$CAT_FOOTER_HTML:"").'</td>
         </tr>
-
-        <tr style="height=:15mm;" class="invisible">
-            <td>.<br>.</td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr style="height:7.5mm">
-            <td>'.($cellcount>(4*$ix+2)?$CAT_HEADER_HTML:"").'</td>
-            <td></td>
-            <td>'.($cellcount>(4*$ix+3)?$CAT_HEADER_HTML:"").'</td>
-        </tr>
-        <tr style="height:120mm">
-            <td><div class="aligner">'.($cellcount>(4*$ix+2)?$CAT_HTML[(4*$ix+2+$has_special)][1]:"").'</div></td>
-            <td></td>
-            <td><div class="aligner">'.($cellcount>(4*$ix+3)?$CAT_HTML[(4*$ix+3+$has_special)][1]:"").'</div></td>
-        </tr>
-        <tr style="height:7.5mm">
-            <td>'.($cellcount>(4*$ix+2)?$CAT_FOOTER_HTML:"").'</td>
-            <td></td>
-            <td>'.($cellcount>(4*$ix+3)?$CAT_FOOTER_HTML:"").'</td>
-        </tr>
-    </table></div>';
+     </table>
+     </div>
+     '.PHP_EOL;
+     
+     if($ix%2)
+        echo '<p style="page-break-after: always;"></p>';
+     elseif($ix+1 < $pagecount)
+        echo '<p style="height:2mm; overflow-y:hide;"></p>';
 }
 ?>
     
