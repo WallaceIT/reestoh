@@ -1,0 +1,19 @@
+html, body{
+    width: 44mm;
+    height: 76mm;
+    margin: 0;
+    padding-left: 4mm;
+    overflow: hidden;
+}
+
+body{
+    background-color: #ffffff;
+    color: #000000;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.invisible{
+    color: #ffffff;
+    overflow-y:hidden;
+}
