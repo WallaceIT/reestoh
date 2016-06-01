@@ -1,12 +1,10 @@
 <?php
-require_once('../db.php');
+require_once('../config.php');
 
-/*
 if(!isset($_SERVER['HTTP_REFERER'])){
         header('HTTP/1.0 403 Forbidden');
         die('You are not allowed to directly access this file.');     
-    }
-*/
+}
 
 // Event data
 $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
@@ -65,6 +63,7 @@ foreach($items as $item){
         $cat_name = $db -> query("SELECT name FROM categories_$eventID WHERE ID = $cat");
         $cat_name = $cat_name -> fetch(PDO::FETCH_ASSOC);
         $CAT_HTML[][0] = "$cat_name[name]";
+        $CAT_HTML[$cur_pointer][1] = "";
         $cur_cat = $cat;
     }
     
@@ -107,7 +106,7 @@ $RECEIPT_HTML = "<div style=\"text-align:center\">*COPIA PER IL CLIENTE*</div>
                  </table>".PHP_EOL;
 
 // Header and footer
-$HEADER_HTML = "<div style=\"text-align:center\">.<br>$event</div><hr>".PHP_EOL;
+$HEADER_HTML = "<div style=\"text-align:center;\"><span style=\"color:white;\">.</span><br>$event</div><hr>".PHP_EOL;
 $FOOTER_HTML = "<hr><div style=\"text-align:center\">#$order[ID] - $order[timestamp]</div>".PHP_EOL;
 
 // ---------------------------------------------------------
@@ -132,6 +131,7 @@ for($ix=$has_special; $ix<$pagecount;$ix++){
     echo $HEADER_HTML;
     echo $CAT_HTML[$ix][1];
     echo $FOOTER_HTML;
+    echo '<p style="page-break-after: always;"></p>';
 }
 
 if($CONFIG_PRINT_RECEIPT){
