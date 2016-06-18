@@ -7,8 +7,8 @@ $CONFIG_PASSWORD = '';
 
 // OPTIONS
 $CONFIG_PRINT_INVOICE = true;
-$CONFIG_PRINT_MODE = 'html'; // can be 'html' or 'pdf'
-
+$CONFIG_PRINT_MODE = 'thermal'; // can be 'html', 'pdf' or 'thermal'
+$CONFIG_PRINTER = '/dev/thermal_a7';
 
 // DATABASE CONNECTION SETUP
 $options = array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8');

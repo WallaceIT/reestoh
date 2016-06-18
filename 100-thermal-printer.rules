@@ -1,0 +1,1 @@
+SUBSYSTEM=="usbmisc", SUBSYSTEMS=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="a036", GROUP="lp", MODE="0666", SYMLINK+="thermal_a7"

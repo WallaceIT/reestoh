@@ -6,6 +6,12 @@ if(!isset($_SERVER['HTTP_REFERER'])){
         die('You are not allowed to directly access this file.');     
 }
 
+require __DIR__ . '/vendor/mike42/escpos-php/autoload.php';
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\Printer;
+$connector = new FilePrintConnector($CONFIG_PRINTER);
+$printer = new Printer($connector);
+
 // Event data
 $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
 $count = $events->rowCount();
@@ -19,7 +25,8 @@ else{
 }
 
 // Extract order data
-$order = $db -> query("SELECT * FROM orders_$eventID WHERE ID = $_GET[ID]");
+$orderID = $_GET['ID'];
+$order = $db -> query("SELECT * FROM orders_$eventID WHERE ID = $orderID");
 $count = $order->rowCount();
 if($count){
     $order = $order -> fetch(PDO::FETCH_ASSOC);
@@ -30,17 +37,10 @@ else{
 
 $items = preg_split("/;/", $order['order_content'], -1, PREG_SPLIT_NO_EMPTY);
 
-
-// Init empty array
-$CAT_HTML=array();
-
 $cur_cat = 0;
 $cur_pointer = -1;
-
-$has_special = 0;
-
-$invoice = "";
-$invoice_total = 0;
+$isfirst = true;
+$seats = 0;
 
 foreach($items as $item){
 
@@ -50,96 +50,129 @@ foreach($items as $item){
     $qty = $idx[1];
     $cat = $idx[2];
 
+    if($cat == 1){
+        if($id == 1)
+            $seats = $qty;
+        continue;
+    }
+
     $sql = "SELECT * FROM items_$eventID WHERE ID = $id";
     $item_detail = $db -> query($sql);
     $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
-    
+
     // New category
     if($cat != $cur_cat){
-        $cur_pointer++;
-        
-        if($cat == 1) $has_special = 1;
+        $cur_cat = $cat;
+
+        if(!$isfirst){
+            $printer -> setTextSize(1, 2);
+            if($seats > 0)
+                $printer -> text("$seats Coperto\n");
+            cat_footer($printer, $orderID, $order['timestamp']);
+            $printer -> cut(Printer::CUT_PARTIAL, 1);
+        }
+        else
+            $isfirst = false;
         
         $cat_name = $db -> query("SELECT name FROM categories_$eventID WHERE ID = $cat");
         $cat_name = $cat_name -> fetch(PDO::FETCH_ASSOC);
-        $CAT_HTML[][0] = "$cat_name[name]";
-        $CAT_HTML[$cur_pointer][1] = "";
-        $cur_cat = $cat;
+        cat_header($printer, $event, $order['customer']);
+        cat_title($printer, "$cat_name[name]\n");
     }
-    
-    $CAT_HTML[$cur_pointer][1] .= "<tr>
-                                       <td style=\"width:10%;text-align:center\">$qty</td>
-                                       <td style=\"width:90%;\">$item_detail[name]</td>
-                                   </tr>".PHP_EOL;
-                                        
-    // invoice
-    $invoice .= "<tr>
-                    <td width=\"7%\" style=\"text-align:center\">$qty</td>
-                    <td width=\"78%\">$item_detail[name]</td>
-                    <td width=\"15%\" style=\"text-align:right\">".$qty*$item_detail['price']."&euro;</td>
-                </tr>".PHP_EOL;
-    $invoice_total += $qty*$item_detail['price'];
+
+    $printer -> setTextSize(1, 2);
+    $printer -> text("$qty $item_detail[name]\n");
 }
-
-// Normal categories (starts from $has_special, equal to 1 only if special elements are present)
-for($i=$has_special; $i<=$cur_pointer;$i++){  
-    $CAT_HTML[$i][1] = "<div>
-                            <b>TAVOLO: __________
-                            <br>
-                            CLIENTE: ".mb_strimwidth($order['customer'], 0, 14, '')."
-                        </div>
-                        <div style=\"text-align:center\">".$CAT_HTML[$i][0]."</div>
-                        <br>
-                        <table style=\"width:100%;border-collapse:collapse;\" border=\"1\">".$CAT_HTML[$i][1].($has_special?$CAT_HTML[0][1]:'')."</table>".PHP_EOL;
-}
-
-// invoice
-$INVOICE_HTML = "<div style=\"text-align:center\">*COPIA PER IL CLIENTE*</div>
-                 <br>
-                 <table style=\"width:100%;border-collapse:collapse;\" border=\"1\" cellpadding=\"1mm\">
-                    $invoice
-                    <tr>
-                        <td width=\"7%\"></td>
-                        <td width=\"78%\" style=\"text-align:right\">TOTALE:</td>
-                        <td width=\"15%\" style=\"text-align:right\">$invoice_total&euro;</td>
-                    </tr>
-                 </table>".PHP_EOL;
-
-// Header and footer
-$HEADER_HTML = "<div style=\"text-align:center;\"><span style=\"color:white;\">.</span><br>$event</div><hr>".PHP_EOL;
-$FOOTER_HTML = "<hr><div style=\"text-align:center\">#$order[ID] - $order[timestamp]</div>".PHP_EOL;
-
-// ---------------------------------------------------------
-
-
-$pagecount = ($cur_pointer+1);
-?>
-
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="utf-8">
-    <title><?php echo $event; ?></title>
-    <link rel="stylesheet" href="thermal.css"/>
-    <script type="text/javascript">
-        print(true);
-    </script>
-</head>
-<body>
-<?php
-for($ix=$has_special; $ix<$pagecount;$ix++){
-    echo $HEADER_HTML;
-    echo $CAT_HTML[$ix][1];
-    echo $FOOTER_HTML;
-    echo '<p style="page-break-after: always;"></p>';
-}
+// last footer
+if($seats > 0)
+    $printer -> text("$seats Coperto\n");
+cat_footer($printer, $orderID, $order['timestamp']);
 
 if($CONFIG_PRINT_INVOICE){
-    echo $HEADER_HTML;
-    echo $INVOICE_HTML;
-    echo $FOOTER_HTML;
+
+    $printer -> cut(Printer::CUT_PARTIAL, 1);
+
+    $invoice_total = 0;
+
+    cat_header($printer, $event, $order['customer'], true);
+    foreach($items as $item){
+
+        $idx = preg_split("/:/", $item, -1, PREG_SPLIT_NO_EMPTY);
+
+        $id  = $idx[0];
+        $qty = $idx[1];
+        $cat = $idx[2];
+
+        $sql = "SELECT * FROM items_$eventID WHERE ID = $id";
+        $item_detail = $db -> query($sql);
+        $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
+
+        $printer -> setTextSize(1, 1);
+        $printer -> setJustification(Printer::JUSTIFY_LEFT);
+        $printer -> text("$qty $item_detail[name] ");
+        spacing($printer, (41 - strlen("$qty $item_detail[name] ".$qty*$item_detail['price']." E")) );
+        $printer -> text($qty*$item_detail['price']." E");
+        $printer -> text("\n");
+        $invoice_total += $qty*$item_detail['price'];
+    }
+    $printer -> text("\n");
+
+    $printer -> setJustification(Printer::JUSTIFY_RIGHT);
+    $printer -> selectPrintMode(Printer::MODE_EMPHASIZED);
+    $printer -> text("TOTALE: $invoice_total E  \n");
+    cat_footer($printer, $orderID, $order['timestamp']);
 }
 
+$printer -> cut(Printer::CUT_FULL, 1);
+$printer -> close();
+
+function cat_title(Printer $printer, $text)
+{
+    $printer -> setJustification(Printer::JUSTIFY_CENTER);
+    $printer -> selectPrintMode(Printer::MODE_EMPHASIZED);
+    $printer -> setTextSize(2, 2);
+    $printer -> text($text);
+    $printer -> setJustification(Printer::JUSTIFY_LEFT);
+    $printer -> selectPrintMode();
+}
+function cat_header(Printer $printer, $evname, $customer, $invoice = false){
+    if(strlen($evname) > 20)
+        $printer -> setTextSize(1, 2);
+    else
+        $printer -> setTextSize(2, 2);
+    $printer -> setJustification(Printer::JUSTIFY_CENTER);
+    $printer -> text("$evname\n");
+    $printer -> setTextSize(4, 1);
+    $printer -> text("----------\n");
+    if(!$invoice){
+        $printer -> setJustification(Printer::JUSTIFY_LEFT);
+        $printer -> setTextSize(1, 2);
+        $printer -> text("Cliente: ");
+        $customerName = strtoupper(mb_strimwidth($customer, 0, 14, ''));
+        $printer -> text($customerName);
+        spacing($printer, (16 - strlen($customerName)) );
+        $printer -> text(" Tavolo: ________ ");
+        $printer -> text("\n");
+    }
+    else {
+        $printer -> setTextSize(1, 2);
+        $printer -> text("***COPIA PER IL CLIENTE***\n");
+    }
+}
+function cat_footer(Printer $printer, $orderID, $timestamp){
+    $printer -> setTextSize(4, 1);
+    $printer -> setJustification(Printer::JUSTIFY_CENTER);
+    $printer -> text("----------\n");
+    $printer -> setTextSize(1, 2);
+    $printer -> text("#$orderID - $timestamp\n");
+}
+function spacing(Printer $printer, $spaces){
+    $spacing = "";
+    $spacingnr = $spaces;
+    while($spacingnr>0){
+    $spacing .= " ";
+        $spacingnr--;
+    }
+    $printer -> text($spacing);
+}
 ?>
-    
-</body>
