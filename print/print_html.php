@@ -41,8 +41,8 @@ $cur_pointer = -1;
 
 $has_special = 0;
 
-$receipt = "";
-$receipt_total = 0;
+$invoice = "";
+$invoice_total = 0;
 
 foreach($items as $item){
 
@@ -77,14 +77,14 @@ foreach($items as $item){
                                             <td class=\"font_items\">$item_detail[name]</td>
                                         </tr>".PHP_EOL;
 
-    if($CONFIG_PRINT_RECEIPT){                                  
+    if($CONFIG_PRINT_INVOICE){                                  
         // Receipt
-        $receipt .= "<tr>
+        $invoice .= "<tr>
                         <td width=\"7%\" style=\"text-align:center\">$qty</td>
                         <td width=\"78%\">$item_detail[name]</td>
                         <td width=\"15%\" style=\"text-align:right;\">".$qty*$item_detail['price']."&euro;</td>
                     </tr>".PHP_EOL;
-        $receipt_total += $qty*$item_detail['price'];
+        $invoice_total += $qty*$item_detail['price'];
     }
 }
 
@@ -97,7 +97,7 @@ for($i=$has_special; $i<=$cur_pointer;$i++){
                         <table style=\"width:100%;border-collapse:collapse;\" border=\"1\">".$CAT_HTML[$i][1].($has_special?$CAT_HTML[0][1]:'')."</table>".PHP_EOL;
 }
 
-if($CONFIG_PRINT_RECEIPT){
+if($CONFIG_PRINT_INVOICE){
     // Receipt
     $cur_pointer++;
     $CAT_HTML[][0] = "*COPIA PER IL CLIENTE*";
@@ -105,11 +105,11 @@ if($CONFIG_PRINT_RECEIPT){
                                 <div style=\"text-align:center\">*COPIA PER IL CLIENTE*</div>
                                 <br>
                                 <table style=\"width:100%;border-collapse:collapse;\" border=\"1\" cellpadding=\"1mm\">
-                                    $receipt
+                                    $invoice
                                     <tr>
                                         <td width=\"7%\"></td>
                                         <td width=\"78%\" style=\"text-align:right\">TOTALE:</td>
-                                        <td width=\"15%\" style=\"text-align:right\">$receipt_total&euro;</td>
+                                        <td width=\"15%\" style=\"text-align:right\">$invoice_total&euro;</td>
                                     </tr>
                                 </table>".PHP_EOL;
 }

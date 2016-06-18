@@ -40,8 +40,8 @@ $cur_pointer = -1;
 
 $has_special = 0;
 
-$receipt = "";
-$receipt_total = 0;
+$invoice = "";
+$invoice_total = 0;
 
 foreach($items as $item){
 
@@ -55,10 +55,10 @@ foreach($items as $item){
     $item_detail = $db -> query($sql);
     $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
     
-    if($CONFIG_PRINT_RECEIPT){
+    if($CONFIG_PRINT_INVOICE){
         // Receipt
-        $receipt .= "<tr><td width=\"7mm\">$qty</td><td width=\"67mm\">$item_detail[name]</td><td width=\"16mm\">".$qty*$item_detail['price']."&euro;</td></tr>";
-        $receipt_total += $qty*$item_detail['price'];
+        $invoice .= "<tr><td width=\"7mm\">$qty</td><td width=\"67mm\">$item_detail[name]</td><td width=\"16mm\">".$qty*$item_detail['price']."&euro;</td></tr>";
+        $invoice_total += $qty*$item_detail['price'];
     }
     
     // New category
@@ -83,12 +83,12 @@ for($i=$has_special; $i<=$cur_pointer;$i++){
     $CAT_HTML[$i][1] = "<br><div><b>TAVOLO:</b> _____ <b> CLIENTE:</b> $order[customer]</div><div style=\"text-align:center\">".$CAT_HTML[$i][0]."</div><br><table border=\"1\" cellpadding=\"1mm\">".$CAT_HTML[$i][1].($has_special?$CAT_HTML[0][1]:'')."</table>";
 }
 
-if($CONFIG_PRINT_RECEIPT){
+if($CONFIG_PRINT_INVOICE){
     // Receipt
-    $receipt .= "<tr><td width=\"7mm\"></td><td width=\"67mm\" style=\"text-align:right\">TOTALE:</td><td width=\"16mm\">$receipt_total&euro;</td></tr>";
+    $invoice .= "<tr><td width=\"7mm\"></td><td width=\"67mm\" style=\"text-align:right\">TOTALE:</td><td width=\"16mm\">$invoice_total&euro;</td></tr>";
     $cur_pointer++;
     $CAT_HTML[][0] = "*COPIA PER IL CLIENTE*";
-    $CAT_HTML[$cur_pointer][1] = "<br><div style=\"text-align:center\">*COPIA PER IL CLIENTE*</div><br><table border=\"1\" cellpadding=\"1mm\">$receipt</table>";
+    $CAT_HTML[$cur_pointer][1] = "<br><div style=\"text-align:center\">*COPIA PER IL CLIENTE*</div><br><table border=\"1\" cellpadding=\"1mm\">$invoice</table>";
 }
 
 // Headee and footer
