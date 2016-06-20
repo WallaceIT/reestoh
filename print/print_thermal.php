@@ -41,6 +41,7 @@ $cur_cat = 0;
 $cur_pointer = -1;
 $isfirst = true;
 $seats = 0;
+$cur_cat_lines = $CONFIG_THERMAL_MIN_LINES;
 
 foreach($items as $item){
 
@@ -67,9 +68,12 @@ foreach($items as $item){
         if(!$isfirst){
             $printer -> setTextSize(1, 2);
             if($seats > 0)
-                $printer -> text("$seats Coperto\n");
+                $printer -> text("$seats COPERTO\n");
+            for(;$cur_cat_lines>0;$cur_cat_lines--)
+                $printer -> text("\n");
             cat_footer($printer, $orderID, $order['timestamp']);
             $printer -> cut(Printer::CUT_PARTIAL, 1);
+            $cur_cat_lines = $CONFIG_THERMAL_MIN_LINES;
         }
         else
             $isfirst = false;
@@ -81,11 +85,13 @@ foreach($items as $item){
     }
 
     $printer -> setTextSize(1, 2);
-    $printer -> text("$qty $item_detail[name]\n");
+    $printer -> text("$qty ".strtoupper("$item_detail[name]")."\n");
 }
 // last footer
 if($seats > 0)
-    $printer -> text("$seats Coperto\n");
+    $printer -> text("$seats COPERTO\n");
+for(;$cur_cat_lines>0;$cur_cat_lines--)
+                $printer -> text("\n");
 cat_footer($printer, $orderID, $order['timestamp']);
 
 if($CONFIG_PRINT_INVOICE){
