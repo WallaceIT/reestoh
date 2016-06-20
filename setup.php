@@ -29,6 +29,7 @@
     `category` tinyint(4) NOT NULL,
     `sold` smallint(6) NOT NULL DEFAULT '0',
     `staff_given` smallint(6) NOT NULL DEFAULT '0',
+    `displayorder` tinyint(4) NOT NULL,
     PRIMARY KEY (`ID`)
     ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3") or die("Unable to create table 'items_0'");;
 

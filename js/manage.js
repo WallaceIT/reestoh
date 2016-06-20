@@ -1,6 +1,7 @@
 $(window).load(function() {
     var SQL = '';
-    var order_changed = 0;
+    var cat_order_changed = 0;
+    var item_order_changed = 0;
     
     $("#mng_event_name").change(function(){
         SQL += "UPDATE events SET `name` = '"+$(this).val()+"' WHERE ID = "+eventID;
@@ -10,10 +11,10 @@ $(window).load(function() {
     $("#mng_cat_container").accordion({ active: "false", collapsible: "true", icons: false, header: "> div > h3"})
                            .sortable({
                                 axis: "y",
-                                handle: ".ui-icon-arrowthick-2-n-s",
+                                handle: ".cat_handle",
                                 stop: function( event, ui ) {
                                     ui.item.children("h3").triggerHandler( "focusout" );
-                                    order_changed = 1;
+                                    cat_order_changed = 1;
                                     $("#mng_save").addClass("ui-state-error");
                                 }
                             });
@@ -41,7 +42,7 @@ $(window).load(function() {
                                 $(".mng_add_item").button({ icons: { primary: "ui-icon-plusthick" },
                                                             text: false})
 
-                                order_changed = 1;
+                                cat_order_changed = 1;
                                 $("#mng_save").addClass("ui-state-error");
                                 $( "#mng_modal_add_cat" ).dialog( "close" );
                         }
@@ -67,7 +68,7 @@ $(window).load(function() {
             
             $("#cat_"+id).remove();
             $("#cat_"+id+"_items").remove();
-            order_changed = 1;
+            cat_order_changed = 1;
             $("#mng_save").addClass("ui-state-error");
         }
     });
@@ -77,10 +78,21 @@ $(window).load(function() {
                                 text: false})
     $(document).on("click", ".mng_add_item", function(){
         item_lastid++;
-        $('<div class="mng_item mng_item_new ui-accordion-header ui-state-default ui-accordion-icons" cat="'+$(this).attr('cat')+'" id="mng_item_'+item_lastid+'" item="'+item_lastid+'"> <input type="text" size="30" id="mng_item_name_'+item_lastid+'" placeholder="Name..." required> &euro; <input type="number" id="mng_item_price_'+item_lastid+'" min="0" step="0.5" placeholder="0" required><span style="float:right"><a class="ui-icon ui-icon-closethick remove_item" href="" item="'+item_lastid+'">X</a></span></div>').insertBefore($(this));
+        $('<div class="mng_item mng_item_new ui-accordion-header ui-state-default ui-accordion-icons" cat="'+$(this).attr('cat')+'" id="mng_item_'+item_lastid+'" item="'+item_lastid+'"> <span class="item-handle handle handle ui-icon ui-icon-arrowthick-2-n-s"></span> <input type="text" size="30" id="mng_item_name_'+item_lastid+'" placeholder="Name..." required> &euro; <input type="number" id="mng_item_price_'+item_lastid+'" min="0" step="0.5" placeholder="0" required><span style="float:right"><a class="ui-icon ui-icon-closethick remove_item" href="" item="'+item_lastid+'">X</a></span></div>').insertBefore($(this));
         $("#mng_cat_container").accordion("refresh");
+        item_order_changed = 1;
         $("#mng_save").addClass("ui-state-error");
     });
+
+    $(".sortable_cat").sortable({
+                        axis: "y",
+                        handle: ".item_handle",
+                        stop: function( event, ui ) {
+                            ui.item.children("h3").triggerHandler( "focusout" );
+                            item_order_changed = 1;
+                            $("#mng_save").addClass("ui-state-error");
+                        }
+                    });
     
     // edit item
     $(".mng_item input").change(function(){
@@ -109,7 +121,7 @@ $(window).load(function() {
                           SQL += "INSERT INTO `categories_"+eventID+"` (`id`, `name`) VALUES ('"+$(this).attr('cat')+"','"+$(this).attr('name')+"')§";
                           $(this).removeClass("newcat");
                       });
-                      if(order_changed == 1){
+                      if(cat_order_changed == 1){
                           $(".group").each(function(){
                               SQL += "UPDATE categories_"+eventID+" SET `displayorder` = '"+$(this).index()+"' WHERE ID = "+$(this).children().attr('cat')+"§";
                           });
@@ -129,6 +141,12 @@ $(window).load(function() {
                           }
                               
                       });
+                      // moved items
+                      if(item_order_changed == 1){
+                          $(".mng_item").each(function(){
+                              SQL += "UPDATE items_"+eventID+" SET `displayorder` = '"+$(this).index()+"' WHERE ID = "+$(this).attr('item')+"§";
+                          });
+                      }
                       
                       $.ajax({
 					       type: "POST",

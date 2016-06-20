@@ -47,20 +47,21 @@
                 <div class="group">
                     <h3 id="cat_<?php echo $ID;?>" cat="<?php echo $ID;?>" name="<?php echo $row_cats['name'];?>">
                         <?php
-                            if($ID != 1) echo '<span class="handle ui-icon ui-icon-arrowthick-2-n-s"></span>';
+                            if($ID != 1) echo '<span class="handle cat_handle ui-icon ui-icon-arrowthick-2-n-s"></span>';
                             else echo '<span class="handle ui-icon ui-icon-locked"></span>';
                             echo $row_cats['name'];
                             if($ID>1) {?>
                                 <button style="float:right" class="remove_cat" cat="<?php echo $ID;?>"></button>
                             <?php ;} ?>
                     </h3>
-                    <div id="cat_<?php echo $ID;?>_items">
+                    <div id="cat_<?php echo $ID;?>_items" class="sortable_cat">
                         <?php
-                            $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID");
+                            $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID ORDER BY displayorder asc");
                             while ($row_items = $items -> fetch(PDO::FETCH_ASSOC)) {
                             $item_ID = $row_items['ID'];
                             if($item_ID > $item_lastID) $item_lastID = $item_ID; ?>
                                 <div class="mng_item ui-accordion-header ui-state-default ui-accordion-icons" cat="<?php echo $row_items['category'];?>" id="mng_item_<?php echo $item_ID;?>" item="<?php echo $item_ID;?>">
+                                    <span class="item_handle handle handle ui-icon ui-icon-arrowthick-2-n-s"></span>
                                     <input size="30" type="text" id="mng_item_name_<?php echo $row_items['ID'];?>" value="<?php echo $row_items['name']; ?>" required>
                                     &euro; <input type="number" id="mng_item_price_<?php echo $item_ID;?>" min="0" step="0.5" value="<?php echo $row_items['price'];?>" required>
                                     <span style="float:right"><a class="ui-icon ui-icon-closethick remove_item" href="" item="<?php echo $item_ID;?>">X</a></span>

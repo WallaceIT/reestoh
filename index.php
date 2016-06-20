@@ -27,7 +27,7 @@
     else{
         while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
             $ID = $row_cats['ID'];
-            $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID ORDER BY ID ASC");
+            $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID ORDER BY displayorder asc");
             $count = $items -> rowCount();
             if($count){
 
