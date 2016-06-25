@@ -7,9 +7,13 @@ if(!isset($_SERVER['HTTP_REFERER'])){
 }
 
 require __DIR__ . '/vendor/mike42/escpos-php/autoload.php';
-use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\Printer;
-$connector = new FilePrintConnector($CONFIG_PRINTER);
+use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+if(php_uname('s') == 'Linux')
+    $connector = new CupsPrintConnector($CONFIG_PRINTER);
+else
+    $connector = new WindowsPrintConnector($CONFIG_PRINTER);
 $printer = new Printer($connector);
 
 // Event data
