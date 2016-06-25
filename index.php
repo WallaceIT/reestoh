@@ -83,6 +83,7 @@
         <div id="event_name_category"><?php echo $event; ?></div>
         <!-- CAT -->
         <?php echo $CATEGORIES_HTML;?>
+        <p>&nbsp;</p>
     </div>
     <div id="controls_container">
         <br>

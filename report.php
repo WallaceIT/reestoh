@@ -79,6 +79,7 @@
 
         echo "<div id='report_total'>Totale: $total&euro;</div>";
     ?>
+    <p>&nbsp;</p>
     </div>
 </body>
 </html>

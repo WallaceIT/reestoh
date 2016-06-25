@@ -75,14 +75,14 @@
     <br>
     
     <button id="mng_add_cat">Aggiungi Categoria</button>
+    <input tye="submit" id="mng_save" value="Salva">
+
     <div id="mng_modal_add_cat" title="Aggiungi categoria:" class="hidden">
         <br>
         <input type="text" id="modal_add_cat_name" required>
         <br><br>
         <button style="float:right" id="mng_add_cat_ok">Ok</button>
     </div>
-    
-    <input tye="submit" id="mng_save" value="Salva">
 <!-- JS variables -->
 <script type="text/javascript">
     var eventID = <?php echo $eventID;?>;

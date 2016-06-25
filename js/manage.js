@@ -8,7 +8,13 @@ $(window).load(function() {
         $("#mng_save").addClass("ui-state-error");
     });
     
-    $("#mng_cat_container").accordion({ active: "false", collapsible: "true", icons: false, header: "> div > h3"})
+    $("#mng_cat_container").accordion({
+                                active: "false",
+                                collapsible: "true",
+                                icons: false,
+                                header: "> div > h3",
+                                heightStyle: "fill"
+                            })
                            .sortable({
                                 axis: "y",
                                 handle: ".cat_handle",

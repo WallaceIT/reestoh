@@ -45,6 +45,7 @@
         </h3>
         <div id="details_order_<?php echo $orderID;?>"></div>
         <?php ;} ?>
+        <p>&nbsp;</p>
     </div>
 </body>
 </html>
