@@ -33,9 +33,12 @@
 
                 $tabler_counter++;
                 if($tabler_counter%2 == 0)
-                    $CATEGORIES_HTML .= "<div style='heigth:0;clear:both'></div>".PHP_EOL;    
+                    $CATEGORIES_HTML .= "<div style='heigth:0;clear:both'></div>".PHP_EOL;   
 
-                $CATEGORIES_HTML .="<div class='category'>".PHP_EOL."<div class='category_name'>$row_cats[name]</div>".PHP_EOL;
+                $CATEGORIES_HTML .="<div class='category'>".PHP_EOL;
+
+                if($ID > 1) // no name for special category
+                    $CATEGORIES_HTML .="<div class='category_name'>$row_cats[name]</div>".PHP_EOL;
 
                 while ($row_items = $items -> fetch(PDO::FETCH_ASSOC)) {
                     if(strlen($row_items['name'])>25){$fsize="0.8em";}else{$fsize="1em";};

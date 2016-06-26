@@ -45,6 +45,7 @@ $cur_cat = 0;
 $cur_pointer = -1;
 $isfirst = true;
 $seats = 0;
+$seats_text = "";
 $cur_cat_lines = $CONFIG_THERMAL_MIN_LINES;
 
 foreach($items as $item){
@@ -56,8 +57,13 @@ foreach($items as $item){
     $cat = $idx[2];
 
     if($cat == 1){
-        if($id == 1)
+        if($id == 1){
+            $sql = "SELECT * FROM items_$eventID WHERE ID = $id";
+            $item_detail = $db -> query($sql);
+            $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
             $seats = $qty;
+            $seats_text = strtoupper("$item_detail[name]");
+        }
         continue;
     }
 
@@ -72,7 +78,7 @@ foreach($items as $item){
         if(!$isfirst){
             $printer -> setTextSize(1, 2);
             if($seats > 0)
-                $printer -> text("$seats COPERTO\n");
+                $printer -> text("$seats $seats_text\n");
             for(;$cur_cat_lines>0;$cur_cat_lines--)
                 $printer -> text("\n");
             cat_footer($printer, $orderID, $order['timestamp']);
@@ -85,7 +91,7 @@ foreach($items as $item){
         $cat_name = $db -> query("SELECT name FROM categories_$eventID WHERE ID = $cat");
         $cat_name = $cat_name -> fetch(PDO::FETCH_ASSOC);
         cat_header($printer, $event, $order['customer']);
-        cat_title($printer, "$cat_name[name]\n");
+        cat_title($printer, "$cat_name[name]\n\n");
     }
 
     $printer -> setTextSize(1, 2);
@@ -93,7 +99,7 @@ foreach($items as $item){
 }
 // last footer
 if($seats > 0)
-    $printer -> text("$seats COPERTO\n");
+    $printer -> text("$seats $seats_text\n");
 for(;$cur_cat_lines>0;$cur_cat_lines--)
                 $printer -> text("\n");
 cat_footer($printer, $orderID, $order['timestamp']);

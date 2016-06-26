@@ -30,6 +30,14 @@
     <link rel="stylesheet" href="js/jquery-ui.css"/>
     <script src="js/jquery.min.js" type="text/javascript"></script>
     <script src="js/jquery-ui.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    $(window).load(function() {
+        $("#report_export_csv").button()
+                               .click(function(){
+                                   location.href = "export_csv.php";
+                               });
+    });
+    </script>
 </head>
 <body>
     <?php if(!isset($_GET['eventID'])) include('toolbar.htm'); ?>
@@ -77,7 +85,10 @@
             }
         }
 
-        echo "<div id='report_total'>Totale: $total&euro;</div>";
+        echo "<div id='report_total'>
+                Totale: $total&euro;
+                <button id='report_export_csv'>Esporta CSV</button>
+              </div>";
     ?>
     <p>&nbsp;</p>
     </div>

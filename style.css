@@ -231,8 +231,10 @@ div#report_total{
     font-size: 1.5em;
     text-align: right;
 }
+button#report_export_csv{
+    font-size: 0.6em;
+}
 /* admin.php */
-
 div.admin_opt_block{
     width: 90%;
     margin: 10px auto;

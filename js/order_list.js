@@ -7,7 +7,7 @@ $(window).load(function() {
         active: false,
         clearStyle: true,
         autoHeight: false,
-        header: '.olist_order_header',          // point to the class that is used as a header
+        header: '.olist_order_header',
         heightStyle: 'content',
         icons: false,
         beforeActivate: function (event,ui) {
@@ -54,7 +54,7 @@ $(window).load(function() {
         var orderID = $(this).attr("order");
         $.ajax({
             type: "POST",
-		    url: "print/print_html.php?ID="+orderID,
+		    url: "print/print_"+printMethod+".php?ID="+orderID,
             success: function(response){
                 if(response != '')
                     alert(response);
