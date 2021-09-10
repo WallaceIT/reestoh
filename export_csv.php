@@ -4,7 +4,7 @@
     if(isset($_GET['eventID']))
         $events = $db -> query("SELECT * FROM events WHERE ID = $_GET[eventID]");
     else
-        $events = $db -> query("SELECT * FROM events WHERE active = TRUE");
+        $events = $db -> query("SELECT * FROM events WHERE active > 0");
 
     if(!$events)
         header("Location: admin.php");
@@ -14,23 +14,40 @@
         $row_events = $events -> fetch(PDO::FETCH_ASSOC);
         $event = $row_events['name'];
         $eventID = $row_events['ID'];
+        $evdayn = $row_events['active'];
+        $evday = $eventID.'_'.$evdayn;
     }
     else header("Location: admin.php?noactive");
+
+    if(isset($_GET['evdayn']) && $_GET['evdayn'] != '') {
+        $evdayn = $_GET['evdayn'];
+        $evday = $eventID.'_'.$_GET['evdayn'];
+    }
+
+    // search for date of day
+    $date = "00/00/0000";
+    $days = preg_split("/;/", $row_events['days'], -1, PREG_SPLIT_NO_EMPTY);
+    foreach($days as $day) {
+        $dt = preg_split("/:/", $day, -1, PREG_SPLIT_NO_EMPTY);
+        if ($dt[0] == $evdayn)
+            $date = $dt[1];
+            break;
+    }
 
     // force csv download
     header('Content-disposition: attachment; filename='.str_replace(' ', '', $event).'.csv');
     header('Content-type: text/plain');
 
-    $cats = $db -> query("SELECT * FROM categories_$eventID");
-    
-    echo "$event;;;;;".PHP_EOL;
+    $cats = $db -> query("SELECT * FROM categories_$evday");
+
+    echo "$event;$date;;;;".PHP_EOL;
     echo ";;;;;".PHP_EOL;
     echo "Categoria;Prodotto;Venduti;Serizio;Totale;".PHP_EOL;
     echo ";;;;;".PHP_EOL;
     $total = 0;
     while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
         $catID = $row_cats['ID'];
-        $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $catID");
+        $items = $db -> query("SELECT * FROM items_$evday WHERE category = $catID");
         $count = $items -> rowCount();
         if($count){
             $sold_cat_total = 0;

@@ -1,7 +1,7 @@
 <?php
     require('config.php');
-    
-    $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
+
+    $events = $db -> query('SELECT * FROM events WHERE active > 0');
     if(!$events)
         header("Location: admin.php");
 
@@ -10,6 +10,8 @@
         $row_events = $events -> fetch(PDO::FETCH_ASSOC);
         $event = $row_events['name'];
         $eventID = $row_events['ID'];
+        $day = $row_events['active'];
+        $evday = $eventID.'_'.$day;
     }
     else{
         header("Location: admin.php?noactive");
@@ -20,20 +22,21 @@
 
     $tabler_counter = 0;
 
-    $cats = $db -> query("SELECT * FROM categories_$eventID ORDER BY displayorder ASC");
+    $cats = $db -> query("SELECT * FROM categories_$evday ORDER BY displayorder ASC");
     if(!$cats){
-        echo "FAIL $eventID";
+        echo "FAIL $evday";
     }
     else{
         while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
             $ID = $row_cats['ID'];
-            $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID ORDER BY displayorder asc");
+            $items = $db -> query("SELECT * FROM items_$evday WHERE category = $ID ORDER BY displayorder asc");
+            if (!$items) break;
             $count = $items -> rowCount();
             if($count){
 
                 $tabler_counter++;
                 if($tabler_counter%2 == 0)
-                    $CATEGORIES_HTML .= "<div style='heigth:0;clear:both'></div>".PHP_EOL;   
+                    $CATEGORIES_HTML .= "<div style='heigth:0;clear:both'></div>".PHP_EOL;
 
                 $CATEGORIES_HTML .="<div class='category'>".PHP_EOL;
 
@@ -77,7 +80,11 @@
     <link rel="stylesheet" href="js/jquery-ui.css"/>
     <script src="js/jquery.min.js" type="text/javascript"></script>
     <script src="js/jquery-ui.min.js" type="text/javascript"></script>
-    <script type="text/javascript">var printMethod = '<?php echo $CONFIG_PRINT_MODE; ?>';</script>
+    <script type="text/javascript">
+        var eventID = <?php echo $eventID; ?>;
+        var evday = '<?php echo $evday; ?>';
+        var printMethod = '<?php echo $CONFIG_PRINT_MODE; ?>';
+    </script>
     <script src="js/index.js" type="text/javascript"></script>
 </head>
 <body>
@@ -97,6 +104,7 @@
         </div>
         <div id="total_container">
             Totale: &euro;<input type="text" size="5" id="total" value="0.00" readonly>
+            <input type="hidden" id="realtotal" value="0.00" readonly>
         </div>
         <div id="confirm_container">
             <form id="confirm_form">

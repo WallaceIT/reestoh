@@ -1,7 +1,7 @@
 $(window).load(function() {
     $('.delete_order').button({icons: {primary: 'ui-icon-closethick'}});
     $('.print_order').button({icons: {primary: 'ui-icon-print'}});
-    
+
     $("#olist_orders_container").accordion({
         collapsible: true,
         active: false,
@@ -18,7 +18,8 @@ $(window).load(function() {
                     data: {
                         func: "getOrderDetails",
                         orderID: $(ui.newHeader[0]).attr("order"),
-                        eventID: eventID
+                        eventID: eventID,
+                        evday: evday
                     },
                     dataType: "text",
                     success: function(response){
@@ -28,18 +29,19 @@ $(window).load(function() {
             }
         }
     });
-                
+
     $(".delete_order").click(function(){
         var orderID = $(this).attr("order");
         if (confirm("Eliminare l'ordine numero "+orderID+"?")) {
-            
+
             $.ajax({
                 type: "POST",
                 url: "functions.php",
                 data: {
                     func: "deleteOrder",
                     orderID: orderID,
-                    eventID: eventID
+                    eventID: eventID,
+                    evday: evday
                 },
                 dataType: "text",
                 success: function(response){
@@ -49,7 +51,7 @@ $(window).load(function() {
             });
         }
     });
-    
+
     $(".print_order").click(function(){
         var orderID = $(this).attr("order");
         $("#frame").attr("src", "print/print_"+printMethod+".php?ID="+orderID);

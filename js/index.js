@@ -5,6 +5,20 @@ $(window).load(function() {
     $("#order_confirm").button();
     $(".button_plus_item").button();
 
+    var discount = 100;
+    $("#realtotal").val(0);
+    $.ajax({
+        type: "POST",
+        url: "functions.php",
+        data: {
+            func: 'getDiscount',
+            eventID: eventID
+        },
+        dataType: "text",
+        success: function(response){
+            discount = parseFloat(response);
+        }
+    });
     w = $("#categories_container").width();
     if(w/2 > 450)
         $(".item_container").width(w/2-15);
@@ -13,7 +27,13 @@ $(window).load(function() {
 
     $(".item").button().click( function() {
 
-        $("#total").val((parseFloat($("#total").val()) + parseFloat($(this).attr("price"))).toFixed(2));
+        $("#realtotal").val((parseFloat($("#realtotal").val()) + parseFloat($(this).attr("price"))).toFixed(2));
+        $("#total").val($("#realtotal").val());
+        if($("#staff").is(":checked")){
+            var new_val = parseFloat($("#realtotal").val()) * (1 - (discount / 100));
+            $("#total").val(parseFloat(new_val).toFixed(2));
+        }
+
         qty = "#qty_item_"+$(this).attr("item");
         $(qty).val(parseInt($(qty).val()) + 1);
         $(qty).css("color","red");
@@ -26,7 +46,15 @@ $(window).load(function() {
         qty = "#qty_item_"+$(this).attr("item");
 
         if (parseInt($(qty).val()) != 0){
-            $("#total").val(parseFloat($("#total").val()) - parseFloat($("#item_"+$(this).attr("item")).attr("price")));
+
+            $("#realtotal").val(parseFloat($("#realtotal").val()) - parseFloat($("#item_"+$(this).attr("item")).attr("price")).toFixed(2));
+
+            $("#total").val(parseFloat($("#realtotal").val()).toFixed(2));
+            if($("#staff").is(":checked")){
+                var new_val = parseFloat($("#realtotal").val()) * (1 - (discount / 100));
+                $("#total").val(parseFloat(new_val).toFixed(2));
+            }
+
             $(qty).val(parseInt($(qty).val()) - 1);
 
             $("#order_item_"+$(this).attr("item")+" input").val(parseInt($(qty).val()));
@@ -38,10 +66,18 @@ $(window).load(function() {
         }
     });
 
+    $("#staff").click( function() {
+        if($("#staff").is(":checked")){
+            var new_val = parseFloat($("#realtotal").val()) * (1 - (discount / 100));
+            $("#total").val(parseFloat(new_val).toFixed(2));
+        } else {
+            $("#total").val(parseFloat($("#realtotal").val()).toFixed(2));
+        }
+    });
+
     $("#confirm_form").submit(function(event){
         event.preventDefault();
         var order = "";
-        var eventID = $("#event_id").val();
 
         $(".qty_item").each(function(){
             if (parseInt($(this).val()) != 0) {
@@ -52,7 +88,7 @@ $(window).load(function() {
         var staff = 0;
         if($("#staff").is(":checked")){
             staff = 1;
-            $("#dialog_total").html("0.00");
+            $("#dialog_total").html($("#total").val());
         }
         else{
             $("#dialog_total").html($("#total").val());
@@ -71,6 +107,7 @@ $(window).load(function() {
             data: {
                 func: 'processOrder',
                 eventID: eventID,
+                evday: evday,
                 customer: $("#customer").val(),
                 order: order,
                 total: $("#total").val(),

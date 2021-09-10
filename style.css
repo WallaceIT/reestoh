@@ -103,7 +103,7 @@ div#confirm_container{
     text-align: right;
     height: 20%;
 }
- 
+
 div#event_name_category{
     text-align: center;
     font-family: fantasy;
@@ -191,7 +191,6 @@ span.handle{
     transform: scale(2);
     margin-right: 5px;
 }
-    
 
 /* order_list.php */
 div#olist_orders_container{
@@ -225,13 +224,16 @@ table.report_cat_table,td,th{
     padding: 10px;
 }
 div#report_total{
-    width: 70%;
+    width: 80%;
     margin: 20px auto;
     font-weight: bold;
     font-size: 1.5em;
     text-align: right;
 }
 button#report_export_csv{
+    font-size: 0.6em;
+}
+button#report_recalc{
     font-size: 0.6em;
 }
 /* admin.php */
@@ -251,4 +253,12 @@ div#admin_messagebox{
 tr.active_event{
     background-color: #f0f8ff;
     color: #000000;
+}
+
+div.mc_discount{
+    font-weight: bold;
+    font-size: 1.2em;
+    width: 80%;
+    margin: 20px auto 5px auto;
+    text-align: center;
 }

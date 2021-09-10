@@ -3,26 +3,40 @@ require_once('../config.php');
 
 if(!isset($_SERVER['HTTP_REFERER'])){
         header('HTTP/1.0 403 Forbidden');
-        die('You are not allowed to directly access this file.');     
+        die('You are not allowed to directly access this file.');
 }
 
-require __DIR__ . '/vendor/mike42/escpos-php/autoload.php';
+require __DIR__ . '/autoload.php';
 use Mike42\Escpos\Printer;
-use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
-if(php_uname('s') == 'Linux')
-    $connector = new CupsPrintConnector($CONFIG_PRINTER);
-else
-    $connector = new WindowsPrintConnector($CONFIG_PRINTER);
+
+if ($CONFIG_PRINT_TRANSPORT == 'net') {
+    use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+    $connector = new NetworkPrintConnector($CONFIG_PRINTER_ADDRESS, $CONFIG_PRINTER_PORT);
+}
+else if ($CONFIG_PRINT_TRANSPORT == 'usb') {
+    use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
+    use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+    if(php_uname('s') == 'Linux')
+        $connector = new CupsPrintConnector($CONFIG_PRINTER);
+    else
+        $connector = new WindowsPrintConnector($CONFIG_PRINTER);
+}
+else {
+    die('Invalid printer settings.');
+}
+
 $printer = new Printer($connector);
 
 // Event data
-$events = $db -> query('SELECT * FROM events WHERE active = TRUE');
+$events = $db -> query('SELECT * FROM events WHERE active > 0');
 $count = $events->rowCount();
 if($count){
     $row_events = $events -> fetch(PDO::FETCH_ASSOC);
     $event = $row_events['name'];
     $eventID = $row_events['ID'];
+    $discount = $row_events['discount'];
+    $day = $row_events['active'];
+    $evday = $eventID.'_'.$day;
 }
 else{
     header("Location: ../index.php");
@@ -30,7 +44,7 @@ else{
 
 // Extract order data
 $orderID = $_GET['ID'];
-$order = $db -> query("SELECT * FROM orders_$eventID WHERE ID = $orderID");
+$order = $db -> query("SELECT * FROM orders_$evday WHERE ID = $orderID");
 $count = $order->rowCount();
 if($count){
     $order = $order -> fetch(PDO::FETCH_ASSOC);
@@ -58,7 +72,7 @@ foreach($items as $item){
 
     if($cat == 1){
         if($id == 1){
-            $sql = "SELECT * FROM items_$eventID WHERE ID = $id";
+            $sql = "SELECT * FROM items_$evday WHERE ID = $id";
             $item_detail = $db -> query($sql);
             $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
             $seats = $qty;
@@ -67,7 +81,7 @@ foreach($items as $item){
         continue;
     }
 
-    $sql = "SELECT * FROM items_$eventID WHERE ID = $id";
+    $sql = "SELECT * FROM items_$evday WHERE ID = $id";
     $item_detail = $db -> query($sql);
     $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
 
@@ -87,8 +101,8 @@ foreach($items as $item){
         }
         else
             $isfirst = false;
-        
-        $cat_name = $db -> query("SELECT name FROM categories_$eventID WHERE ID = $cat");
+
+        $cat_name = $db -> query("SELECT name FROM categories_$evday WHERE ID = $cat");
         $cat_name = $cat_name -> fetch(PDO::FETCH_ASSOC);
         cat_header($printer, $event, $order['customer']);
         cat_title($printer, "$cat_name[name]\n\n");
@@ -119,7 +133,7 @@ if($CONFIG_PRINT_INVOICE){
         $qty = $idx[1];
         $cat = $idx[2];
 
-        $sql = "SELECT * FROM items_$eventID WHERE ID = $id";
+        $sql = "SELECT * FROM items_$evday WHERE ID = $id";
         $item_detail = $db -> query($sql);
         $item_detail = $item_detail -> fetch(PDO::FETCH_ASSOC);
 
@@ -135,7 +149,14 @@ if($CONFIG_PRINT_INVOICE){
 
     $printer -> setJustification(Printer::JUSTIFY_RIGHT);
     $printer -> selectPrintMode(Printer::MODE_EMPHASIZED);
-    $printer -> text("TOTALE: $invoice_total E  \n");
+
+    if ($order['staff']	== 1) {
+        $invoice_total *= (1 - $discount / 100);
+        $printer -> text("TOTALE (Servizio): $invoice_total E  \n");
+    } else {
+        $printer -> text("TOTALE: $invoice_total E  \n");
+    }
+
     cat_footer($printer, $orderID, $order['timestamp']);
 }
 

@@ -1,21 +1,25 @@
 <?php
     require('config.php');
     if(!isset($_GET['default'])){
-        $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
+        $events = $db -> query('SELECT * FROM events WHERE active > 0');
         if(!$events)
             header("Location: admin.php");
-        
+
         $count = $events->rowCount();
         if($count){
             $row_events = $events -> fetch(PDO::FETCH_ASSOC);
             $event = $row_events['name'];
             $eventID = $row_events['ID'];
+            $day = $row_events['active'];
+            $discount = $row_events['discount'];
+            $evday = $eventID.'_'.$day;
         }
         else header("Location: admin.php?noactive");
     }
     else {
         $event = 'Default';
-        $eventID = 0;
+        $eventID = '0_1';
+        $discount = 100;
     }
 ?>
 <!DOCTYPE html>
@@ -39,7 +43,7 @@
         <?php
             $item_lastID = 0;
             $cat_lastID = 0;
-            $cats = $db -> query("SELECT * FROM categories_$eventID ORDER BY displayorder asc");
+            $cats = $db -> query("SELECT * FROM categories_$evday ORDER BY displayorder asc");
             while ($row_cats = $cats -> fetch(PDO::FETCH_ASSOC)) {
                 $ID = $row_cats['ID'];
                 if($ID > $cat_lastID) $cat_lastID = $ID;
@@ -56,7 +60,8 @@
                     </h3>
                     <div id="cat_<?php echo $ID;?>_items" class="sortable_cat">
                         <?php
-                            $items = $db -> query("SELECT * FROM items_$eventID WHERE category = $ID ORDER BY displayorder asc");
+                            $items = $db -> query("SELECT * FROM items_$evday WHERE category = $ID ORDER BY displayorder asc");
+                            if (!$items) break;
                             while ($row_items = $items -> fetch(PDO::FETCH_ASSOC)) {
                             $item_ID = $row_items['ID'];
                             if($item_ID > $item_lastID) $item_lastID = $item_ID; ?>
@@ -73,7 +78,11 @@
         <?php ;} ?>
     </div>
     <br>
-    
+
+    <div id="event_discount" class="mc_discount">
+        <label for='mng_event_discount' class='text-center'>% sconto per servizio</label>&nbsp;<input type="text" id="mng_event_discount" size="20" value="<?php echo $discount;?>">&nbsp;%
+    </div>
+
     <button id="mng_add_cat">Aggiungi Categoria</button>
     <input tye="submit" id="mng_save" value="Salva">
 
@@ -85,7 +94,8 @@
     </div>
 <!-- JS variables -->
 <script type="text/javascript">
-    var eventID = <?php echo $eventID;?>;
+    var eventID = '<?php echo $eventID;?>';
+    var evday = '<?php echo $evday;?>';
     var cat_lastid = <?php echo $cat_lastID;?>;
     var item_lastid = <?php echo $item_lastID;?>;
 </script>

@@ -1,7 +1,7 @@
 <?php
     require('config.php');
-    
-    $events = $db -> query('SELECT * FROM events WHERE active = TRUE');
+
+    $events = $db -> query('SELECT * FROM events WHERE active > 0');
     if(!$events)
         header("Location: admin.php");
 
@@ -10,6 +10,8 @@
         $row_events = $events -> fetch(PDO::FETCH_ASSOC);
         $event = $row_events['name'];
         $eventID = $row_events['ID'];
+        $day = $row_events['active'];
+        $evday = $eventID.'_'.$day;
     }
     else header("Location: admin.php?noactive");
 ?>
@@ -23,16 +25,19 @@
     <link rel="stylesheet" href="js/jquery-ui.css"/>
     <script src="js/jquery.min.js" type="text/javascript"></script>
     <script src="js/jquery-ui.min.js" type="text/javascript"></script>
-    <script type="text/javascript">var eventID = <?php echo $eventID;?>;</script>
-    <script type="text/javascript">var printMethod = '<?php echo $CONFIG_PRINT_MODE; ?>';</script>
+    <script type="text/javascript">
+        var eventID = <?php echo $eventID; ?>;
+        var evday = '<?php echo $evday; ?>';
+        var printMethod = '<?php echo $CONFIG_PRINT_MODE; ?>';
+    </script>
     <script src="js/order_list.js" type="text/javascript"></script>
 </head>
 <body>
     <?php include('toolbar.htm'); ?>
     <div id="event_name"><?php echo $event; ?> - Lista degli ordini</div>
     <div id="olist_orders_container">
-        <?php 
-        $orders = $db -> query("SELECT * FROM orders_$eventID ORDER BY ID DESC");
+        <?php
+        $orders = $db -> query("SELECT * FROM orders_$evday ORDER BY ID DESC");
         while ($row_orders = $orders -> fetch(PDO::FETCH_ASSOC)) {
             $orderID = $row_orders['ID'];?>
         <h3 id="order_<?php echo $orderID;?>" order="<?php echo $orderID;?>" class="olist_order_header">
