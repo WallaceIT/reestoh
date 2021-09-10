@@ -47,5 +47,6 @@
         <?php ;} ?>
         <p>&nbsp;</p>
     </div>
+    <iframe id="frame" src="" class="hidden"></iframe>
 </body>
 </html>

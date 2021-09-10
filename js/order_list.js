@@ -52,13 +52,6 @@ $(window).load(function() {
     
     $(".print_order").click(function(){
         var orderID = $(this).attr("order");
-        $.ajax({
-            type: "POST",
-		    url: "print/print_"+printMethod+".php?ID="+orderID,
-            success: function(response){
-                if(response != '')
-                    alert(response);
-                }
-            });
+        $("#frame").attr("src", "print/print_"+printMethod+".php?ID="+orderID);
     });
 });
