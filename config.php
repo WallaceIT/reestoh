@@ -7,7 +7,7 @@ $CONFIG_PASSWORD = 'password';
 
 // OPTIONS
 $CONFIG_PRINT_INVOICE = true;
-$CONFIG_PRINT_MODE = 'thermal'; // can be 'html', 'pdf' or 'thermal'
+$CONFIG_PRINT_MODE = 'html'; // can be 'html' or 'thermal'
 $CONFIG_PRINTER = '/dev/thermal_a7';
 $CONFIG_THERMAL_MIN_LINES = 8;
 
