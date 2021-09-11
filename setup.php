@@ -36,7 +36,7 @@
     PRIMARY KEY (`ID`)
     ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3") or die("Unable to create table 'items_0'");;
 
-    $db -> query("INSERT INTO `items_0` (`ID`, `name`, `price`, `category`, `sold`, `staff_given`) VALUES (1, 'Coperto', '1.50', 1, 0, 0), (2, 'Asporto', '0.50', 1, 0, 0)") or die("Unable to insert default values into 'items_0'");;
+    $db -> query("INSERT INTO `items_0` (`ID`, `name`, `price`, `category`, `sold`, `staff_given`, `displayorder`) VALUES (1, 'Coperto', '1.50', 1, 0, 0, 0), (2, 'Asporto', '0.50', 1, 0, 0, 0)") or die("Unable to insert default values into 'items_0'");;
 
     $db -> query("CREATE TABLE IF NOT EXISTS `orders_0` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,

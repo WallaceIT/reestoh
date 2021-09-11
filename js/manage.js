@@ -129,7 +129,7 @@ $(window).load(function() {
                   .click(function(){
                       // new categories
                       $(".newcat").each(function(){
-                          SQL += "INSERT INTO `categories_"+evday+"` (`id`, `name`) VALUES ('"+$(this).attr('cat')+"','"+$(this).attr('name')+"')§";
+                          SQL += "INSERT INTO `categories_"+evday+"` (`id`, `name`, `displayorder`) VALUES ('"+$(this).attr('cat')+"','"+$(this).attr('name')+"','"+$(this).index()+"')§";
                           $(this).removeClass("newcat");
                       });
                       if(cat_order_changed == 1){
@@ -140,7 +140,9 @@ $(window).load(function() {
                       // new items
                       $(".mng_item_new").each(function(){
                           if($('#mng_item_name_'+$(this).attr('item')).val()){
-                              SQL += "INSERT INTO `items_"+evday+"` (`id`, `name`, `price`, `category`) VALUES ('"+$(this).attr('item')+"','"+$('#mng_item_name_'+$(this).attr('item')).val()+"','"+$('#mng_item_price_'+$(this).attr('item')).val()+"','"+$(this).attr('cat')+"')§";
+                              price = $('#mng_item_price_'+$(this).attr('item')).val();
+                              if (price == '') price = 0;
+                              SQL += "INSERT INTO `items_"+evday+"` (`id`, `name`, `price`, `category`, `displayorder`) VALUES ('"+$(this).attr('item')+"','"+$('#mng_item_name_'+$(this).attr('item')).val()+"','"+price+"','"+$(this).attr('cat')+"','"+$(this).index()+"')§";
                               $(this).removeClass("mng_item_new");
                           }
                       });
