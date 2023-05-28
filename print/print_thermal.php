@@ -7,25 +7,11 @@ if(!isset($_SERVER['HTTP_REFERER'])){
 }
 
 require __DIR__ . '/autoload.php';
+use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
-
-if ($CONFIG_PRINT_TRANSPORT == 'net') {
-    use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
-    $connector = new NetworkPrintConnector($CONFIG_PRINTER_ADDRESS, $CONFIG_PRINTER_PORT);
-}
-else if ($CONFIG_PRINT_TRANSPORT == 'usb') {
-    use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
-    use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
-    if(php_uname('s') == 'Linux')
-        $connector = new CupsPrintConnector($CONFIG_PRINTER);
-    else
-        $connector = new WindowsPrintConnector($CONFIG_PRINTER);
-}
-else {
-    die('Invalid printer settings.');
-}
-
-$printer = new Printer($connector);
 
 // Event data
 $events = $db -> query('SELECT * FROM events WHERE active > 0');
@@ -39,7 +25,7 @@ if($count){
     $evday = $eventID.'_'.$day;
 }
 else{
-    header("Location: ../index.php");
+    die('Cannot find active event.');
 }
 
 // Extract order data
@@ -50,9 +36,35 @@ if($count){
     $order = $order -> fetch(PDO::FETCH_ASSOC);
 }
 else{
-    header("Location: ../index.php");
+    die('Cannot extract order data.');
 };
 
+// Setup printer
+switch ($CONFIG_PRINT_TRANSPORT) {
+    case 'dummy':
+        $connector = new DummyPrintConnector();
+        break;
+    case 'cups':
+        $connector = new CupsPrintConnector($CONFIG_PRINTER);
+    case 'net':
+        $connector = new NetworkPrintConnector($CONFIG_PRINTER_ADDRESS, $CONFIG_PRINTER_PORT);
+        break;
+    case 'usb':
+        if (php_uname('s') == 'Linux')
+            $connector = new FilePrintConnector($CONFIG_PRINTER);
+        else
+            $connector = new WindowsPrintConnector($CONFIG_PRINTER);
+        break;
+    default:
+        die('Invalid printer settings.');
+}
+
+$printer = new Printer($connector);
+if (!$printer) {
+    die('Cannot setup printer.');
+}
+
+// Format print
 $items = preg_split("/;/", $order['order_content'], -1, PREG_SPLIT_NO_EMPTY);
 
 $cur_cat = 0;

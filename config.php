@@ -10,13 +10,16 @@ $CONFIG_PORT = '3306';
 
 // OPTIONS
 $CONFIG_PRINT_INVOICE = true;
-$CONFIG_PRINT_MODE = 'html'; // can be 'html' or 'thermal'
-$CONFIG_PRINT_TRANSPORT = 'usb'; // can be 'usb' or 'net'
+$CONFIG_PRINT_MODE = 'thermal'; // can be 'html' or 'thermal'
+$CONFIG_PRINT_TRANSPORT = 'usb'; // can be 'usb', 'net' or 'cups'
+
 /* if CONFIG_PRINT_TRANSPORT is 'usb' */
-$CONFIG_PRINTER = '/dev/thermal_a7';
+$CONFIG_PRINTER = '/dev/usb/lp0';
+
 /* if CONFIG_PRINT_TRANSPORT is 'net' */
 $CONFIG_PRINTER_ADDRESS = '192.168.10.125';
 $CONFIG_PRINTER_PORT = 9100;
+
 /* print options */
 $CONFIG_THERMAL_MIN_LINES = 8;
 
