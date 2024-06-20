@@ -6,6 +6,7 @@
     else {
         $event = 'Default';
         $eventID = 0;
+	    $events = false;
     }
 
     $newevent_options = "";
