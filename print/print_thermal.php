@@ -1,31 +1,33 @@
 <?php
 require_once('../config.php');
 
-if(!isset($_SERVER['HTTP_REFERER'])){
-        header('HTTP/1.0 403 Forbidden');
-        die('You are not allowed to directly access this file.');
-}
-
 require __DIR__ . '/autoload.php';
+use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\Printer;
 
 if ($CONFIG_PRINT_TRANSPORT == 'net') {
-    use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
     $connector = new NetworkPrintConnector($CONFIG_PRINTER_ADDRESS, $CONFIG_PRINTER_PORT);
 }
 else if ($CONFIG_PRINT_TRANSPORT == 'usb') {
-    use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
-    use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
     if(php_uname('s') == 'Linux')
         $connector = new CupsPrintConnector($CONFIG_PRINTER);
     else
         $connector = new WindowsPrintConnector($CONFIG_PRINTER);
+}
+else if ($CONFIG_PRINT_TRANSPORT == 'file') {
+    $connector = new FilePrintConnector($CONFIG_PRINTER);
 }
 else {
     die('Invalid printer settings.');
 }
 
 $printer = new Printer($connector);
+if (!$printer) {
+    die('Cannot setup printer.');
+}
 
 // Event data
 $events = $db -> query('SELECT * FROM events WHERE active > 0');
@@ -39,7 +41,7 @@ if($count){
     $evday = $eventID.'_'.$day;
 }
 else{
-    header("Location: ../index.php");
+    die('Cannot find active event.');
 }
 
 // Extract order data
@@ -50,9 +52,13 @@ if($count){
     $order = $order -> fetch(PDO::FETCH_ASSOC);
 }
 else{
-    header("Location: ../index.php");
+    die('Cannot extract order data.');
 };
 
+/* Initialize */
+$printer -> initialize();
+
+// Format print
 $items = preg_split("/;/", $order['order_content'], -1, PREG_SPLIT_NO_EMPTY);
 
 $cur_cat = 0;
@@ -173,11 +179,17 @@ function cat_title(Printer $printer, $text)
     $printer -> selectPrintMode();
 }
 function cat_header(Printer $printer, $evname, $customer, $invoice = false){
-    if(strlen($evname) > 20)
+    $printer -> setJustification(Printer::JUSTIFY_CENTER);
+
+    // Fix for printers appending fiscal data on top
+    // $printer -> setTextSize(1, 1);
+    // $printer -> text(" ");
+
+    if(strlen($evname) > 18)
         $printer -> setTextSize(1, 2);
     else
         $printer -> setTextSize(2, 2);
-    $printer -> setJustification(Printer::JUSTIFY_CENTER);
+
     $printer -> text("$evname\n");
     $printer -> setTextSize(4, 1);
     $printer -> text("----------\n");
@@ -194,6 +206,11 @@ function cat_header(Printer $printer, $evname, $customer, $invoice = false){
     else {
         $printer -> setTextSize(1, 2);
         $printer -> text("***COPIA PER IL CLIENTE***\n");
+
+        $printer -> setTextSize(1, 1);
+        $customerName = strtoupper(mb_strimwidth($customer, 0, 14, ''));
+        $printer -> text($customerName);
+        $printer -> text("\n");
     }
 }
 function cat_footer(Printer $printer, $orderID, $timestamp){
@@ -202,6 +219,10 @@ function cat_footer(Printer $printer, $orderID, $timestamp){
     $printer -> text("----------\n");
     $printer -> setTextSize(1, 2);
     $printer -> text("#$orderID - $timestamp\n");
+
+    // Fix for printers appending fiscal data at bottom
+    // $printer -> setTextSize(1, 1);
+    // $printer -> text(" ");
 }
 function spacing(Printer $printer, $spaces){
     $spacing = "";
